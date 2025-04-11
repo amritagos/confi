@@ -1,5 +1,6 @@
 .snakemake*
 snmk_workflow/results/
+tests/output
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
