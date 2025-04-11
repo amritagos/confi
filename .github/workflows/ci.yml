@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest] # moltemplate doesn't seem to work on macos-latest
         build-type: [Release]
 
     steps:
