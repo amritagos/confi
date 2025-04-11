@@ -1,0 +1,21 @@
+[project]
+name = "confi"
+version = "0.0.1"
+description = "Creates configuration files for LAMMPS and GROMACS"
+authors = [
+    {name = "Amrita Goswami", email = "amrita16thaug646@gmail.com"},
+]
+
+dependencies = [
+    "numpy>=1.26.4",
+    "ase>=3.22.1",
+    "scipy>=1.7.3",
+    "pytest",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
