@@ -1,0 +1,144 @@
+# In moltemplate each molecule type is stored in a file whose format mimics the
+# format of a LAMMPS "data" file (with "Atoms" and "Masses" sections).
+# Once defined, these molecules may be copied and moved to build larger systems.
+
+
+FeIon {
+
+  # AtomID  MolID  AtomType  charge   X       Y         Z
+  write("Data Atoms") {
+    $atom:Fe $mol @atom:Fe    2.0    0.00000  0.00000   0.000000
+  }
+
+  write_once("Data Masses") {
+    @atom:Fe 55.845
+  }
+
+  # The "In Settings" section stores force-field parameters for this molecule
+  write_once("In Settings") {
+    pair_coeff @atom:Fe @atom:Fe  4.628251 2.4193
+  }
+  # (taken from the paper :  Parameters (σ, ε) of Lennard-Jones for Fe, Ni, Pb for Potential and 
+  # Cr based on Melting Point Values Using the Molecular Dynamics Method of the Lammps Program)
+
+} # FeIon
+
+# -------------------------------------------------------------------------------------------
+
+ClIon {
+
+  # AtomID  MolID  AtomType  charge   X       Y         Z
+  write("Data Atoms") {
+    $atom:Cl $mol @atom:Cl    -1.0    0.00000  0.00000   0.000000
+  }
+
+  write_once("Data Masses") {
+    @atom:Cl 35.453
+  }
+
+  # The "In Settings" section stores force-field parameters for this molecule
+  write_once("In Settings") {
+    pair_coeff @atom:Cl @atom:Cl  0.1 4.45
+  }
+
+} # ClIon
+
+# -------------------------------------------------------------------------------------------
+
+Monomer {
+
+  # AtomID MoleculeID AtomType charge    X       Y       Z
+
+  write("Data Atoms") {
+    $atom:fe   $mol:m  @atom:FeIon/Fe  2.0  0.0000000 0.00000 0.000000
+    $atom:cl  $mol:m  @atom:ClIon/Cl   -2.0  2.33       0.00      0.00
+  }
+
+# All 2 atoms share same molID number (represeted here by "$mol:m")
+# however that number is different for different water molecules.
+# The charges should be explicitly set in 'Data Atoms'.
+
+  write_once("Data Masses") {
+    @atom:FeIon/Fe 55.845
+    @atom:ClIon/Cl 35.453
+  }
+
+  write("Data Bonds") {
+    $bond:fecl @bond:FeCl $atom:fe $atom:cl
+  }
+
+  write_once("In Settings") {
+    bond_coeff   @bond:FeCl 10000 2.33
+    # pair_coeff   @atom:O @atom:O lj/cut/tip4p/long 0.21084 3.1668 
+    # pair_coeff   @atom:H @atom:H lj/cut/tip4p/long 0.00000 0.00000
+    # pair_coeff   @atom:H @atom:O lj/cut/tip4p/long 0.00000 0.00000
+    # When there is no hybrid pair potential: 
+    # pair_coeff   @atom:/FeIon/Fe @atom:/FeIon/Fe 4.628251 2.4193
+    # pair_coeff   @atom:/ClIon/Cl @atom:/ClIon/Cl 0.1 4.45
+    pair_coeff   @atom:FeIon/Fe @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    
+    fix fShakeFeCl all shake 0.0001 20 0 b @bond:FeCl 
+    # (Remember to disable this during minimization using "unfix fShakeSPCE")
+    # Note: Since we are using SHAKE constraints, the bond and angle strength
+    # parameters [("10000", "10000"); previously ("600.0", "75.0")] do not matter. But the equilibrium bond
+    # length ("0.9572") and equilibrium angle ("109.47") does matter. LAMMPS
+    # obtains these numbers from the bond_coeff and angle_coeff commands above.
+  }
+
+  write_once("In Init") {
+    # -- Default styles (for solo "TIP4P_2005" water) --
+    units        real
+    atom_style   full
+    # pair_style   hybrid lj/cut/tip4p/long @atom:O @atom:H @bond:OH @angle:HOH 0.15 12 8.5 lj/cut/coul/long 12 8.5
+    # pair_style   lj/cut/tip4p/long @atom:O @atom:H @bond:OH @angle:HOH 0.15 12 8.5 
+    pair_style   lj/cut/coul/long 12 8.5
+    bond_style   harmonic # this was previously harmonic harmonic
+    angle_style  harmonic # this was previously hybrid harmonic
+    kspace_style pppm/tip4p 1e-6 
+    # pair_modify  mix arithmetic  
+  }
+
+} # end of Fe-Cl monomer
+
+# -------------------------------------------------------------------------------------------
+
+Dimer {
+
+  # AtomID MoleculeID AtomType charge    X       Y       Z
+
+  write("Data Atoms") {
+    $atom:fe   $mol:m  @atom:FeIon/Fe  2.0  0.0000000 0.00000 0.000000
+    $atom:cl1  $mol:m  @atom:ClIon/Cl   -2.0  2.33       0.00      0.00
+    $atom:cl2  $mol:m  @atom:ClIon/Cl   -2.0  -2.33       0.00      0.00
+  }
+
+  write_once("Data Masses") {
+    @atom:FeIon/Fe 55.845
+    @atom:ClIon/Cl 35.453
+  }
+
+  write("Data Bonds") {
+    $bond:fecl1 @bond:Monomer/FeCl $atom:fe $atom:cl1
+    $bond:fecl2 @bond:Monomer/FeCl $atom:fe $atom:cl2
+  }
+
+  write_once("In Settings") {
+    bond_coeff   @bond:Monomer/FeCl 10000 2.33
+    pair_coeff   @atom:FeIon/Fe @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    
+    # fix shake cannot be used for linear rigid molecules. Use fix/rigid instead
+  }
+
+  write_once("In Init") {
+    # -- Default styles (for solo "TIP4P_2005" water) --
+    units        real
+    atom_style   full
+    pair_style   lj/cut/coul/long 12 8.5
+    bond_style   harmonic # this was previously harmonic harmonic
+    angle_style  harmonic # this was previously hybrid harmonic
+    kspace_style pppm/tip4p 1e-6 
+  }
+
+} # end of Fe-Cl2 dimer
+
+# -------------------------------------------------------------------------------------------

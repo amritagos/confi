@@ -1,0 +1,28 @@
+# In moltemplate each molecule type is stored in a file whose format mimics the
+# format of a LAMMPS "data" file (with "Atoms" and "Masses" sections).
+# Once defined, these molecules may be copied and moved to build larger systems.
+
+
+# We define two molecule classes to represent Na+ and Cl- ions, respectively.
+# They both contain only one atom.
+
+
+# Cl- ion!!
+
+ClIon {
+
+  # AtomID  MolID  AtomType  charge   X       Y         Z
+  write("Data Atoms") {
+    $atom:Cl $mol @atom:Cl    -1.0    0.00000  0.00000   0.000000
+  }
+
+  write_once("Data Masses") {
+    @atom:Cl 35.453
+  }
+
+  # The "In Settings" section stores force-field parameters for this molecule
+  write_once("In Settings") {
+    pair_coeff @atom:Cl @atom:Cl  0.1 4.45
+  }
+
+} # ClIon

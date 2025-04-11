@@ -1,0 +1,17 @@
+name: confienv
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python>=3.10
+  - ase>=3.22.1
+  - numpy>=1.26.4
+  - ipython>=8.26.0
+  - ipykernel
+  - pytest
+  - snakemake
+  - moltemplate
+  - packmol
+pip: 
+  - snakemake-executor-plugin-cluster-generic
+  - Jinja2

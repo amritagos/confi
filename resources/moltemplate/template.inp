@@ -1,0 +1,26 @@
+import {{input.water_file}}
+import {{input.cation_file}}
+import {{input.anion_file}}
+
+{% if params.n_monomer > 0 %}
+monomer = new Monomer[{{params.n_monomer}}]
+{% endif %}
+{% if params.n_dimer > 0 %}
+dimer = new Dimer[{{params.n_dimer}}]
+{% endif %}
+{% if params.n_cations > 0 %}
+cations = new {{params.cation_name}}[{{params.n_cations}}] 
+{% endif %}
+{% if params.n_anions > 0 %}
+anions = new ClIon[{{params.n_anions}}]
+{% endif %}
+{% if params.n_wat > 0 %}
+wat  = new TIP4P_2005 [{{params.n_wat}}]
+{% endif %}
+
+# Periodic boundary conditions:
+write_once("Data Boundary") {
+   0.0  {{params.x_box_length}}  xlo xhi
+   0.0  {{params.y_box_length}}  ylo yhi
+   0.0  {{params.z_box_length}}  zlo zhi
+}
