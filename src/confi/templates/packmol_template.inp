@@ -11,6 +11,8 @@ filetype xyz
 
 output {{params.system_file}}
 
+seed {{params.seed}}
+
 {% if params.n_monomer > 0 %}
 structure {{params.monomer_file}}
   number {{params.n_monomer}}

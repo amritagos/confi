@@ -60,7 +60,6 @@ def check_xyz(
 
 def test_packmol_input():
     package_root = Path(__file__).parent.parent.resolve()  # top-level directory
-    packmol_template = package_root / Path("resources/packmol/packmol_template.inp")
     output_packmol_inp = package_root / Path(
         "tests/output/packmol.inp"
     )  # relative to the top-level directory
@@ -79,17 +78,17 @@ def test_packmol_input():
     free_anions = total_anions - n_monomers - 2 * n_dimers
     box_length = 10  # in Angstrom, as are all distances
 
-    # Create dictionaries for the input and params
-    input = dict(
+    # Create PackmolParams and PackmolInput for the parameters and inputs required by the Jinja2 renderer
+    # Use absolute paths wherever possible
+    input = confi.PackmolInput(
         cation_file=package_root / Path(f"resources/packmol/fe.xyz"),
         anion_file=package_root / Path(f"resources/packmol/cl.xyz"),
         water_file=package_root
         / Path(f"resources/packmol/tip4p_2005/tip4p_2005_water.xyz"),
     )
-    params = dict(
+    params = confi.PackmolParams(
         monomer_file=package_root / Path(f"resources/packmol/fe_cl.xyz"),
         dimer_file=package_root / Path("resources/packmol/fe_cl2.xyz"),
-        tolerance=2.0,  # Tolerance between constituent units in Angstrom
         system_file=package_root
         / Path(
             "tests/output/system.xyz"
@@ -102,12 +101,10 @@ def test_packmol_input():
         x_box_length=box_length,
         y_box_length=box_length,
         z_box_length=box_length,
-        cation_radius=1.75,  # Generally the radius is at least half the tolerance but you can increase it
-        anion_radius=1.75,
     )
 
     # Actually render the input file :
-    confi.render_jinja2(packmol_template, output_packmol_inp, params, input)
+    confi.render_packmol_input(output_packmol_inp, params, input)
 
     # Check that the packmol input file exists
     assert output_packmol_inp.exists(), "Packmol input file was not created."
@@ -130,7 +127,7 @@ def test_packmol_input():
         free_anions_read,
         n_monomers_read,
         n_dimers_read,
-    ) = check_xyz(xyz_file=params["system_file"])
+    ) = check_xyz(xyz_file=params.system_file)
 
     # The total number of cations etc should be the same as we put in
     assert n_wat_read == n_wat

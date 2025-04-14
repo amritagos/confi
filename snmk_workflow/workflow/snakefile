@@ -6,8 +6,8 @@ molality = [1, 2, 4]
 identifiers = [f"{m}_m" for m in molality]  # sample identifier
 total_cation = [int(10 * m) for m in molality]  # Total number of cations to put inside
 total_anion = [int(2 * cat) for cat in total_cation]
-total_dimer = [1, 1, 1] # anion-cation-anion
-total_monomer = [1, 1, 1] # cation-anion
+total_dimer = [1, 1, 1]  # anion-cation-anion
+total_monomer = [1, 1, 1]  # cation-anion
 total_water = [555 for m in molality]
 
 BOX_DIMENSION = 30.0  # In Angstroms  26.14647785
@@ -68,7 +68,7 @@ rule all:
 rule packmol_input:
     localrule: True
     input:
-        template=f"../resources/packmol/packmol_template.inp",
+        template=f"../src/confi/templates/packmol_template.inp",
         cation_file=f"../resources/packmol/{CATION_FILE_NAME}",
         anion_file=f"../resources/packmol/cl.xyz",
         water_file=f"../resources/packmol/{WATER_MODEL}/{WATER_MODEL}_water.xyz",
@@ -87,6 +87,7 @@ rule packmol_input:
         z_box_length=BOX_DIMENSION,
         cation_radius=1.75,  # Generally the radius is at least half the tolerance but you can increase it 
         anion_radius=1.75,
+        seed=-1,
     output:
         packmol="results/packmol/{sample}/packmol.inp",
     script:
@@ -106,7 +107,7 @@ rule run_packmol:
 rule moltemplate_input:
     localrule: True
     input:
-        template=f"../resources/moltemplate/template.inp",
+        template=f"../src/confi/templates/moltemplate_template.inp",
         cation_file=Path(
             f"../resources/moltemplate/" + CATION_FILE_NAME_MOLTEMPLATE
         ).resolve(),

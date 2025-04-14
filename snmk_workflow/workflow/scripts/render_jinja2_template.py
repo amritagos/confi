@@ -1,13 +1,12 @@
-from typing import Union
 from snakemake.script import snakemake
-from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 import confi
 
 
 def main(template: Path, output: Path, params: dict, input: dict):
 
-    confi.render_jinja2(template, output, params, input)
+    variables = dict(params=params, input=input)
+    confi.render_jinja2(template, variables, output)
 
 
 if __name__ == "__main__":
