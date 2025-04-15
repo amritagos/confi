@@ -13,7 +13,7 @@ MgIon {
   }
 
   write_once("Data Masses") {
-    @atom:Mg 55.845
+    @atom:Mg 24.305
   }
 
   # The "In Settings" section stores force-field parameters for this molecule (used Fe but doesn't matter)
@@ -24,3 +24,97 @@ MgIon {
   # Cr based on Melting Point Values Using the Molecular Dynamics Method of the Lammps Program)
 
 } # MgIon
+
+# -------------------------------------------------------------------------------------------
+
+Monomer {
+
+  # AtomID MoleculeID AtomType charge    X       Y       Z
+
+  write("Data Atoms") {
+    $atom:mg   $mol:m  @atom:MgIon/Mg  2.0  0.0000000 0.00000 0.000000
+    $atom:cl  $mol:m  @atom:ClIon/Cl   -2.0  2.33       0.00      0.00
+  }
+
+# All 2 atoms share same molID number (represeted here by "$mol:m")
+# however that number is different for different water molecules.
+# The charges should be explicitly set in 'Data Atoms'.
+
+  write_once("Data Masses") {
+    @atom:MgIon/Mg 24.305
+    @atom:ClIon/Cl 35.453
+  }
+
+  write("Data Bonds") {
+    $bond:mgcl @bond:MgCl $atom:mg $atom:cl
+  }
+
+  write_once("In Settings") {
+    bond_coeff   @bond:MgCl 10000 2.33
+    pair_coeff   @atom:MgIon/Mg @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    
+    fix fShakeMgCl all shake 0.0001 20 0 b @bond:MgCl 
+    # (Remember to disable this during minimization using "unfix fShakeSPCE")
+    # Note: Since we are using SHAKE constraints, the bond and angle strength
+    # parameters [("10000", "10000"); previously ("600.0", "75.0")] do not matter. But the equilibrium bond
+    # length ("0.9572") and equilibrium angle ("109.47") does matter. LAMMPS
+    # obtains these numbers from the bond_coeff and angle_coeff commands above.
+  }
+
+  write_once("In Init") {
+    # -- Default styles (for solo "TIP4P_2005" water) --
+    units        real
+    atom_style   full
+    # pair_style   hybrid lj/cut/tip4p/long @atom:O @atom:H @bond:OH @angle:HOH 0.15 12 8.5 lj/cut/coul/long 12 8.5
+    # pair_style   lj/cut/tip4p/long @atom:O @atom:H @bond:OH @angle:HOH 0.15 12 8.5 
+    pair_style   lj/cut/coul/long 12 8.5
+    bond_style   harmonic # this was previously harmonic harmonic
+    angle_style  harmonic # this was previously hybrid harmonic
+    kspace_style pppm/tip4p 1e-6 
+    # pair_modify  mix arithmetic  
+  }
+
+} # end of Mg-Cl monomer
+
+# -------------------------------------------------------------------------------------------
+
+Dimer {
+
+  # AtomID MoleculeID AtomType charge    X       Y       Z
+
+  write("Data Atoms") {
+    $atom:mg   $mol:m  @atom:MgIon/Mg  2.0  0.0000000 0.00000 0.000000
+    $atom:cl1  $mol:m  @atom:ClIon/Cl   -2.0  2.33       0.00      0.00
+    $atom:cl2  $mol:m  @atom:ClIon/Cl   -2.0  -2.33       0.00      0.00
+  }
+
+  write_once("Data Masses") {
+    @atom:MgIon/Mg 24.305
+    @atom:ClIon/Cl 35.453
+  }
+
+  write("Data Bonds") {
+    $bond:mgcl1 @bond:Monomer/MgCl $atom:mg $atom:cl1
+    $bond:mgcl2 @bond:Monomer/MgCl $atom:mg $atom:cl2
+  }
+
+  write_once("In Settings") {
+    bond_coeff   @bond:Monomer/MgCl 10000 2.33
+    pair_coeff   @atom:MgIon/Mg @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    
+    # fix shake cannot be used for linear rigid molecules. Use fix/rigid instead
+  }
+
+  write_once("In Init") {
+    # -- Default styles (for solo "TIP4P_2005" water) --
+    units        real
+    atom_style   full
+    pair_style   lj/cut/coul/long 12 8.5
+    bond_style   harmonic # this was previously harmonic harmonic
+    angle_style  harmonic # this was previously hybrid harmonic
+    kspace_style pppm/tip4p 1e-6 
+  }
+
+} # end of Mg-Cl2 dimer
+
+# -------------------------------------------------------------------------------------------
