@@ -8,11 +8,11 @@ monomer = new Monomer[{{params.n_monomer}}]
 {% if params.n_dimer > 0 %}
 dimer = new Dimer[{{params.n_dimer}}]
 {% endif %}
-{% if params.n_cations > 0 %}
-cations = new Cation[{{params.n_cations}}] 
+{% if params.n_free_cations > 0 %}
+cations = new Cation[{{params.n_free_cations}}] 
 {% endif %}
-{% if params.n_anions > 0 %}
-anions = new ClIon[{{params.n_anions}}]
+{% if params.n_free_anions > 0 %}
+anions = new ClIon[{{params.n_free_anions}}]
 {% endif %}
 {% if params.n_wat > 0 %}
 wat  = new TIP4P_2005 [{{params.n_wat}}]

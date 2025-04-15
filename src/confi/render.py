@@ -1,7 +1,12 @@
 from typing import Optional
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
-from confi.parameters import PackmolInput, PackmolParams
+from confi.parameters import (
+    PackmolInput,
+    PackmolParams,
+    MoltemplateInput,
+    MoltemplateParams,
+)
 
 
 def render_jinja2(templ: Path, variables: dict, output: Path):
@@ -35,6 +40,31 @@ def render_packmol_input(
     if template is None:
         src_dir = Path(__file__).parent.resolve()
         template = src_dir / Path(f"templates/packmol_template.inp")
+
+    variables = dict(params=params.model_dump(), input=input.model_dump(), extra=kwargs)
+
+    render_jinja2(template, variables, output)
+
+
+def render_moltemplate_input(
+    output: Path,
+    params: MoltemplateParams,
+    input: MoltemplateInput,
+    template: Optional[Path] = None,
+    **kwargs,
+):
+    """Renders a PACKMOL input file that can then be run with PACKMOL.
+
+    Args:
+        output (Path): The output path where the moltemplate input file will be written out
+        params (MoltemplateParams): Parameters that are used in the Moltemplate input jinja2 template.
+        input (MoltemplateInput): Input parameters used in the Moltemplate input jinja2 template
+        template (Optional[Path], optional): The Jinja2 template used for PACKMOL. Defaults to None (essentially the template file for PACKMOL inside confi/templates).
+        kwargs: These are extra keywords that can be used in a user-defined jinja2 template. Inside the template, use like so: extra.kwarg
+    """
+    if template is None:
+        src_dir = Path(__file__).parent.resolve()
+        template = src_dir / Path(f"templates/moltemplate_template.inp")
 
     variables = dict(params=params.model_dump(), input=input.model_dump(), extra=kwargs)
 

@@ -60,7 +60,11 @@ def check_xyz(
     )
 
 
+@pytest.fixture
 def test_packmol_input():
+    """Create the input file for a PACKMOL input file and run PACKMOL to create an XYZ file for a system with
+    5 water molecules, 2 free cations (Fe), 2 monomers, 2 dimer (and adjust the anions, Cl)
+    """
     package_root = Path(__file__).parent.parent.resolve()  # top-level directory
     output_packmol_inp = package_root / Path(
         "tests/output/packmol.inp"
@@ -140,3 +144,53 @@ def test_packmol_input():
     assert free_anions_read == free_anions
     assert n_monomers_read == n_monomers
     assert n_dimers_read == n_dimers
+
+    return params
+
+
+def test_moltemplate_input(test_packmol_input):
+    """Using the PACKMOL generated XYZ file as input, create a LAMMPS data file"""
+    package_root = Path(__file__).parent.parent.resolve()  # top-level directory
+    output_moltemplate_inp = package_root / Path(
+        "tests/output/moltemplate/system.lt"
+    )  # relative to the top-level directory
+    output_moltemplate_inp.parent.mkdir(parents=True, exist_ok=True)
+
+    packmol_params = test_packmol_input
+
+    # Dictionary from the PackmolParams class
+    packmol_param_dict = packmol_params.model_dump()
+
+    # Create MoltemplateParams and MoltemplateInput for the parameters and inputs required by the Jinja2 renderer
+    # Use absolute paths wherever possible
+    input = confi.parameters.MoltemplateInput(
+        cation_file=package_root / Path(f"resources/moltemplate/fe_ions.lt"),
+        anion_file=package_root / Path(f"resources/moltemplate/cl.lt"),
+        water_file=package_root / Path(f"resources/moltemplate/tip4p_2005.lt"),
+    )
+    params = confi.parameters.MoltemplateParams(
+        moltemplate_input=input,
+        n_free_cations=packmol_param_dict["n_free_cations"],
+        n_free_anions=packmol_param_dict["n_free_anions"],
+        n_wat=packmol_param_dict["n_wat"],
+        n_monomer=packmol_param_dict["n_monomer"],
+        n_dimer=packmol_param_dict["n_dimer"],
+        x_box_length=packmol_param_dict["x_box_length"],
+        y_box_length=packmol_param_dict["y_box_length"],
+        z_box_length=packmol_param_dict["z_box_length"],
+    )
+
+    # Render the moltemplate input file using the default moltemplate template:
+    confi.render.render_moltemplate_input(
+        output_moltemplate_inp, params=params, input=input
+    )
+
+    command = f'moltemplate.sh -atomstyle "full" {output_moltemplate_inp} -xyz {packmol_param_dict["system_file"]}'
+
+    # Run the command using subprocess
+    try:
+        subprocess.run(
+            command, shell=True, check=True, cwd=str(output_moltemplate_inp.parent)
+        )
+    except subprocess.CalledProcessError as e:
+        pytest.fail(f"Moltemplate command failed with error: {e}")

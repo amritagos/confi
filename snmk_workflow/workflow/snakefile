@@ -123,7 +123,7 @@ rule moltemplate_input:
     output:
         moltemplate="results/moltemplate/{sample}/system.lt",
     script:
-        "scripts/render_jinja2_template.py"
+        "scripts/render_moltemplate.py"
 
 
 rule run_moltemplate:

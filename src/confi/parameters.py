@@ -73,3 +73,48 @@ class PackmolParams(BaseModel):
         if errors:
             raise ValueError("; ".join(errors))
         return self
+
+
+class MoltemplateInput(BaseModel):
+    cation_file: Optional[Path] = None
+    anion_file: Optional[Path] = None
+    water_file: Optional[Path] = None
+
+
+class MoltemplateParams(BaseModel):
+
+    moltemplate_input: MoltemplateInput
+    n_free_cations: int = Field(ge=0, default=0)
+    n_free_anions: int = Field(ge=0, default=0)  # free anions
+    n_wat: int = Field(ge=0, default=0)  # Number of water molecules
+    n_monomer: int = Field(
+        ge=0, default=0
+    )  # Number of cation-anion units (should be inside the cation file)
+    n_dimer: int = Field(
+        ge=0, default=0
+    )  # Number of anion-cation-anion units (definition should be inside cation file)
+    x_box_length: float = Field(gt=0)  # Box length in the x-dimension
+    y_box_length: float = Field(gt=0)  # Box length in the y-dimension
+    z_box_length: float = Field(gt=0)  # Box length in the z-dimension
+
+    @model_validator(mode="after")
+    def check_required_files(self) -> Self:
+        errors = []
+        # Check free cations
+        if self.n_free_cations > 0 and self.moltemplate_input.cation_file is None:
+            errors.append(
+                "n_free_cations > 0 but moltemplate_input.cation_file has not been provided."
+            )
+        # Check free anions
+        if self.n_free_anions > 0 and self.moltemplate_input.anion_file is None:
+            errors.append(
+                "n_free_anions > 0 but moltemplate_input.anion_file has not been provided."
+            )
+
+        # Check water_file if n_wat>0
+        if self.n_wat > 0 and self.moltemplate_input.water_file is None:
+            errors.append("n_wat > 0 but water_file has not been provided.")
+
+        if errors:
+            raise ValueError("; ".join(errors))
+        return self
