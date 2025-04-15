@@ -5,7 +5,7 @@
 
 # Mg ion!!
 
-MgIon {
+Cation {
 
   # AtomID  MolID  AtomType  charge   X       Y         Z
   write("Data Atoms") {
@@ -23,7 +23,7 @@ MgIon {
   # (taken from the paper :  Parameters (σ, ε) of Lennard-Jones for Fe, Ni, Pb for Potential and 
   # Cr based on Melting Point Values Using the Molecular Dynamics Method of the Lammps Program)
 
-} # MgIon
+} # Cation
 
 # -------------------------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ Monomer {
   # AtomID MoleculeID AtomType charge    X       Y       Z
 
   write("Data Atoms") {
-    $atom:mg   $mol:m  @atom:MgIon/Mg  2.0  0.0000000 0.00000 0.000000
+    $atom:mg   $mol:m  @atom:Cation/Mg  2.0  0.0000000 0.00000 0.000000
     $atom:cl  $mol:m  @atom:ClIon/Cl   -2.0  2.33       0.00      0.00
   }
 
@@ -41,7 +41,7 @@ Monomer {
 # The charges should be explicitly set in 'Data Atoms'.
 
   write_once("Data Masses") {
-    @atom:MgIon/Mg 24.305
+    @atom:Cation/Mg 24.305
     @atom:ClIon/Cl 35.453
   }
 
@@ -51,7 +51,7 @@ Monomer {
 
   write_once("In Settings") {
     bond_coeff   @bond:MgCl 10000 2.33
-    pair_coeff   @atom:MgIon/Mg @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    pair_coeff   @atom:Cation/Mg @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
     
     fix fShakeMgCl all shake 0.0001 20 0 b @bond:MgCl 
     # (Remember to disable this during minimization using "unfix fShakeSPCE")
@@ -83,13 +83,13 @@ Dimer {
   # AtomID MoleculeID AtomType charge    X       Y       Z
 
   write("Data Atoms") {
-    $atom:mg   $mol:m  @atom:MgIon/Mg  2.0  0.0000000 0.00000 0.000000
+    $atom:mg   $mol:m  @atom:Cation/Mg  2.0  0.0000000 0.00000 0.000000
     $atom:cl1  $mol:m  @atom:ClIon/Cl   -2.0  2.33       0.00      0.00
     $atom:cl2  $mol:m  @atom:ClIon/Cl   -2.0  -2.33       0.00      0.00
   }
 
   write_once("Data Masses") {
-    @atom:MgIon/Mg 24.305
+    @atom:Cation/Mg 24.305
     @atom:ClIon/Cl 35.453
   }
 
@@ -100,7 +100,7 @@ Dimer {
 
   write_once("In Settings") {
     bond_coeff   @bond:Monomer/MgCl 10000 2.33
-    pair_coeff   @atom:MgIon/Mg @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    pair_coeff   @atom:Cation/Mg @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
     
     # fix shake cannot be used for linear rigid molecules. Use fix/rigid instead
   }

@@ -21,7 +21,6 @@ MONOMER_FILE_NAME = "fe_cl.xyz"
 DIMER_FILE_NAME = "fe_cl2.xyz"
 # MOLTEMPLATE
 CATION_FILE_NAME_MOLTEMPLATE = "fe_ions.lt"
-CATION_NAME_MOLTEMPLATE = "FeIon"
 
 input_dict = {}
 
@@ -113,15 +112,14 @@ rule moltemplate_input:
         anion_file=Path(f"../resources/moltemplate/cl.lt").resolve(),
         water_file=Path(f"../resources/moltemplate/tip4p_2005.lt").resolve(),
     params:
-        n_cations=lambda wc: input_dict[wc.sample]["n_cations"],
-        n_anions=rules.packmol_input.params.n_free_anions,
+        n_free_cations=lambda wc: input_dict[wc.sample]["n_cations"],
+        n_free_anions=rules.packmol_input.params.n_free_anions,
         n_wat=lambda wc: input_dict[wc.sample]["n_wat"],
         n_monomer=rules.packmol_input.params.n_monomer,
         n_dimer=rules.packmol_input.params.n_dimer,
         x_box_length=rules.packmol_input.params.x_box_length,
         y_box_length=rules.packmol_input.params.y_box_length,
         z_box_length=rules.packmol_input.params.z_box_length,
-        cation_name=CATION_NAME_MOLTEMPLATE,
     output:
         moltemplate="results/moltemplate/{sample}/system.lt",
     script:

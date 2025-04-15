@@ -3,7 +3,7 @@
 # Once defined, these molecules may be copied and moved to build larger systems.
 
 
-FeIon {
+Cation {
 
   # AtomID  MolID  AtomType  charge   X       Y         Z
   write("Data Atoms") {
@@ -21,7 +21,7 @@ FeIon {
   # (taken from the paper :  Parameters (σ, ε) of Lennard-Jones for Fe, Ni, Pb for Potential and 
   # Cr based on Melting Point Values Using the Molecular Dynamics Method of the Lammps Program)
 
-} # FeIon
+} # Cation
 
 # -------------------------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ Monomer {
   # AtomID MoleculeID AtomType charge    X       Y       Z
 
   write("Data Atoms") {
-    $atom:fe   $mol:m  @atom:FeIon/Fe  2.0  0.0000000 0.00000 0.000000
+    $atom:fe   $mol:m  @atom:Cation/Fe  2.0  0.0000000 0.00000 0.000000
     $atom:cl  $mol:m  @atom:ClIon/Cl   -2.0  2.33       0.00      0.00
   }
 
@@ -59,7 +59,7 @@ Monomer {
 # The charges should be explicitly set in 'Data Atoms'.
 
   write_once("Data Masses") {
-    @atom:FeIon/Fe 55.845
+    @atom:Cation/Fe 55.845
     @atom:ClIon/Cl 35.453
   }
 
@@ -69,13 +69,7 @@ Monomer {
 
   write_once("In Settings") {
     bond_coeff   @bond:FeCl 10000 2.33
-    # pair_coeff   @atom:O @atom:O lj/cut/tip4p/long 0.21084 3.1668 
-    # pair_coeff   @atom:H @atom:H lj/cut/tip4p/long 0.00000 0.00000
-    # pair_coeff   @atom:H @atom:O lj/cut/tip4p/long 0.00000 0.00000
-    # When there is no hybrid pair potential: 
-    # pair_coeff   @atom:/FeIon/Fe @atom:/FeIon/Fe 4.628251 2.4193
-    # pair_coeff   @atom:/ClIon/Cl @atom:/ClIon/Cl 0.1 4.45
-    pair_coeff   @atom:FeIon/Fe @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    pair_coeff   @atom:Cation/Fe @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
     
     fix fShakeFeCl all shake 0.0001 20 0 b @bond:FeCl 
     # (Remember to disable this during minimization using "unfix fShakeSPCE")
@@ -107,13 +101,13 @@ Dimer {
   # AtomID MoleculeID AtomType charge    X       Y       Z
 
   write("Data Atoms") {
-    $atom:fe   $mol:m  @atom:FeIon/Fe  2.0  0.0000000 0.00000 0.000000
+    $atom:fe   $mol:m  @atom:Cation/Fe  2.0  0.0000000 0.00000 0.000000
     $atom:cl1  $mol:m  @atom:ClIon/Cl   -2.0  2.33       0.00      0.00
     $atom:cl2  $mol:m  @atom:ClIon/Cl   -2.0  -2.33       0.00      0.00
   }
 
   write_once("Data Masses") {
-    @atom:FeIon/Fe 55.845
+    @atom:Cation/Fe 55.845
     @atom:ClIon/Cl 35.453
   }
 
@@ -124,7 +118,7 @@ Dimer {
 
   write_once("In Settings") {
     bond_coeff   @bond:Monomer/FeCl 10000 2.33
-    pair_coeff   @atom:FeIon/Fe @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    pair_coeff   @atom:Cation/Fe @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
     
     # fix shake cannot be used for linear rigid molecules. Use fix/rigid instead
   }

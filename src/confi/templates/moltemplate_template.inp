@@ -9,7 +9,7 @@ monomer = new Monomer[{{params.n_monomer}}]
 dimer = new Dimer[{{params.n_dimer}}]
 {% endif %}
 {% if params.n_cations > 0 %}
-cations = new {{params.cation_name}}[{{params.n_cations}}] 
+cations = new Cation[{{params.n_cations}}] 
 {% endif %}
 {% if params.n_anions > 0 %}
 anions = new ClIon[{{params.n_anions}}]
