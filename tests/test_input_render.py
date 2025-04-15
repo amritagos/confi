@@ -4,6 +4,8 @@ from pathlib import Path
 import subprocess
 from ase.io import read
 
+import confi.parameters
+
 
 def check_xyz(
     xyz_file: Path,
@@ -80,13 +82,14 @@ def test_packmol_input():
 
     # Create PackmolParams and PackmolInput for the parameters and inputs required by the Jinja2 renderer
     # Use absolute paths wherever possible
-    input = confi.PackmolInput(
+    input = confi.parameters.PackmolInput(
         cation_file=package_root / Path(f"resources/packmol/fe.xyz"),
         anion_file=package_root / Path(f"resources/packmol/cl.xyz"),
         water_file=package_root
         / Path(f"resources/packmol/tip4p_2005/tip4p_2005_water.xyz"),
     )
-    params = confi.PackmolParams(
+    params = confi.parameters.PackmolParams(
+        packmol_input=input,
         monomer_file=package_root / Path(f"resources/packmol/fe_cl.xyz"),
         dimer_file=package_root / Path("resources/packmol/fe_cl2.xyz"),
         system_file=package_root
@@ -104,7 +107,7 @@ def test_packmol_input():
     )
 
     # Actually render the input file :
-    confi.render_packmol_input(output_packmol_inp, params, input)
+    confi.render.render_packmol_input(output_packmol_inp, params, input)
 
     # Check that the packmol input file exists
     assert output_packmol_inp.exists(), "Packmol input file was not created."

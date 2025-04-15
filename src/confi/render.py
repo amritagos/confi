@@ -1,48 +1,7 @@
-from typing import Optional, Union
+from typing import Optional
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
-from pydantic import BaseModel
-
-
-class PackmolInput(BaseModel):
-    cation_file: Path
-    anion_file: Path
-    water_file: Path
-
-
-class PackmolParams(BaseModel):
-    system_file: Path  # output path to which PACKMOL will create the file if you actually run it with the created input file
-    x_box_length: float  # Box length in the x-dimension
-    y_box_length: float  # Box length in the y-dimension
-    z_box_length: float  # Box length in the z-dimension
-    n_wat: Optional[int] = None  # Number of water molecules
-    water_file: Optional[Path] = (
-        None  # if n_wat is greater than 0 then this cannot be None
-    )
-    n_free_cations: Optional[int] = None
-    cation_file: Optional[Path] = (
-        None  # if n_free_cations is greater than 0 then this cannot be None
-    )
-    cation_radius: Optional[float] = 1.75  # overrides the tolerance
-    n_free_anions: Optional[int] = None  # free anions
-    anion_file: Optional[Path] = (
-        None  # if n_free_cations is greater than 0 then this cannot be None
-    )
-    anion_radius: Optional[float] = 1.75  # overrides the tolerance
-    n_monomer: Optional[int] = None  # Number of cation-anion units
-    monomer_file: Optional[Path] = (
-        None  # if n_monomer is greater than 0 you must input this or PACKMOL will fail
-    )
-    n_dimer: Optional[int] = None  # Number of anion-cation-anion units
-    dimer_file: Optional[Path] = (
-        None  # if n_dimer is greater than 0 you must input this or PACKMOL will fail
-    )
-    tolerance: float = (
-        2.0  # minimum distance between subunits in PACKMOL. can be overriden by radius
-    )
-    seed: int = (
-        -1
-    )  # PACKMOL uses -1 to generate a seed automatically from the computer time.
+from confi.parameters import PackmolInput, PackmolParams
 
 
 def render_jinja2(templ: Path, variables: dict, output: Path):
