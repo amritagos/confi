@@ -14,9 +14,9 @@ class PackmolParams(BaseModel):
 
     packmol_input: PackmolInput
     system_file: Path  # output path to which PACKMOL will create the file if you actually run it with the created input file
-    x_box_length: float  # Box length in the x-dimension
-    y_box_length: float  # Box length in the y-dimension
-    z_box_length: float  # Box length in the z-dimension
+    x_box_length: float = Field(gt=0)  # Box length in the x-dimension
+    y_box_length: float = Field(gt=0)  # Box length in the y-dimension
+    z_box_length: float = Field(gt=0)  # Box length in the z-dimension
     n_wat: int = Field(ge=0, default=0)  # Number of water molecules
     water_file: Optional[Path] = (
         None  # if n_wat is greater than 0 then this cannot be None
