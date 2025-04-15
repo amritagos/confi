@@ -68,7 +68,6 @@ rule all:
 rule packmol_input:
     localrule: True
     input:
-        template=f"../src/confi/templates/packmol_template.inp",
         cation_file=f"../resources/packmol/{CATION_FILE_NAME}",
         anion_file=f"../resources/packmol/cl.xyz",
         water_file=f"../resources/packmol/{WATER_MODEL}/{WATER_MODEL}_water.xyz",
@@ -91,7 +90,7 @@ rule packmol_input:
     output:
         packmol="results/packmol/{sample}/packmol.inp",
     script:
-        "scripts/render_jinja2_template.py"
+        "scripts/render_packmol.py"
 
 
 rule run_packmol:

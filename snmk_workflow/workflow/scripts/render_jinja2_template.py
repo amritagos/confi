@@ -6,7 +6,7 @@ import confi
 def main(template: Path, output: Path, params: dict, input: dict):
 
     variables = dict(params=params, input=input)
-    confi.render_jinja2(template, variables, output)
+    confi.render.render_jinja2(template, variables, output)
 
 
 if __name__ == "__main__":
