@@ -43,7 +43,7 @@ def count_bond_types(bonds_array):
     return dict(bond_counter)
 
 
-def test_moltemplate_input(test_packmol_input):
+def test_moltemplate_input(test_packmol_input_lammps):
     """Using the PACKMOL generated XYZ file as input, create a LAMMPS data file"""
     package_root = Path(__file__).parent.parent.resolve()  # top-level directory
     output_moltemplate_inp = package_root / Path(
@@ -51,7 +51,7 @@ def test_moltemplate_input(test_packmol_input):
     )  # relative to the top-level directory
     output_moltemplate_inp.parent.mkdir(parents=True, exist_ok=True)
 
-    packmol_params = test_packmol_input
+    packmol_params = test_packmol_input_lammps
 
     # Dictionary from the PackmolParams class
     packmol_param_dict = packmol_params.model_dump()
