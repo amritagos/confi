@@ -11,10 +11,11 @@ import confi.parameters
 
 def check_xyz(
     xyz_file: Path,
-    cation_anion_bond_length: float = 2.34,
+    cation_anion_bond_length: float = 2.33,
     cation_symbol: str = "Fe",
     anion_symbol: str = "Cl",
     oxygen_symbol: str = "O",
+    tolerance: float = 0.001,
 ):
     atoms = read(xyz_file)
     total_anions = 0
@@ -36,7 +37,7 @@ def check_xyz(
                     continue
                 if (
                     atoms.get_distance(atom.index, j, mic=True)
-                    <= cation_anion_bond_length
+                    <= cation_anion_bond_length + tolerance
                 ):
                     n_anion_neigh += 1
             if n_anion_neigh == 1:
