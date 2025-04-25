@@ -1,0 +1,26 @@
+import /home/amritagos/Git/Github/confi/resources/moltemplate/tip4p_2005.lt
+import /home/amritagos/Git/Github/confi/resources/moltemplate/fe_ions.lt
+import /home/amritagos/Git/Github/confi/resources/moltemplate/cl.lt
+
+
+monomer = new Monomer[1]
+
+
+dimer = new Dimer[1]
+
+
+cations = new Cation[38] 
+
+
+anions = new ClIon[77]
+
+
+wat  = new TIP4P_2005 [555]
+
+
+# Periodic boundary conditions:
+write_once("Data Boundary") {
+   0.0  30.0  xlo xhi
+   0.0  30.0  ylo yhi
+   0.0  30.0  zlo zhi
+}
