@@ -2,25 +2,30 @@ import numpy as np
 from pathlib import Path
 import json
 
+# General
 molality = [1, 2, 4]
-identifiers = [f"{m}_m" for m in molality]  # sample identifier
+identifiers = [f"{m}_m" for m in molality]  # sample identifier for each type of system
 total_cation = [int(10 * m) for m in molality]  # Total number of cations to put inside
 total_anion = [int(2 * cat) for cat in total_cation]
 total_dimer = [1, 1, 1]  # anion-cation-anion
 total_monomer = [1, 1, 1]  # cation-anion
 total_water = [555 for m in molality]
 
-BOX_DIMENSION = 30.0  # In Angstroms  26.14647785
-CATION_SYMBOL = "Fe"
-ANION_SYMBOL = "Cl"
-ION_ANION_CUTOFF = 3.0
-WATER_MODEL = "tip4p_ew"  # "tip4p_ew"
-# PACKMOL
-CATION_FILE_NAME = "fe.xyz"
-MONOMER_FILE_NAME = "fe_cl.xyz"
-DIMER_FILE_NAME = "fe_cl2.xyz"
-# MOLTEMPLATE
-CATION_FILE_NAME_MOLTEMPLATE = "fe_ions.lt"
+BOX_DIMENSION = 30.0  # In Angstroms
+
+# Input XYZ files required for PACKMOL
+# if using relative paths they should be relative to the workflow folder
+WATER_MODEL = "tip4p_2005"
+PACKMOL_CATION_INP = f"../resources/packmol/fe.xyz"
+PACKMOL_ANION_INP = f"../resources/packmol/cl.xyz"
+PACKMOL_WATER_INP = f"../resources/packmol/{WATER_MODEL}/{WATER_MODEL}_water.xyz"
+PACKMOL_MONOMER_INP = f"../resources/packmol/fe_cl.xyz"
+PACKMOL_DIMER_INP = f"../resources/packmol/fe_cl2.xyz"
+# Resource and input files, variables etc for Moltemplate
+# Important: always use absolute paths for moltemplate
+MOLTEMPLATE_CATION_INP = Path(f"../resources/moltemplate/fe_ions.lt").resolve()
+MOLTEMPLATE_ANION_INP = Path(f"../resources/moltemplate/cl.lt").resolve()
+MOLTEMPLATE_WATER_INP = Path(f"../resources/moltemplate/tip4p_2005.lt").resolve()
 
 input_dict = {}
 
@@ -58,23 +63,23 @@ SAMPLES = list(input_dict.keys())
 
 rule all:
     input:
-        expand("results/packmol/{sample}/packmol.inp", sample=SAMPLES),
-        expand("results/packmol/{sample}/system.xyz", sample=SAMPLES),
-        expand("results/moltemplate/{sample}/system.lt", sample=SAMPLES),
         expand("results/moltemplate/{sample}/system.data", sample=SAMPLES),
 
 
-rule packmol_input:
+rule create_data:
     localrule: True
     input:
-        cation_file=f"../resources/packmol/{CATION_FILE_NAME}",
-        anion_file=f"../resources/packmol/cl.xyz",
-        water_file=f"../resources/packmol/{WATER_MODEL}/{WATER_MODEL}_water.xyz",
+        packmol_cation_file=PACKMOL_CATION_INP,
+        packmol_anion_file=PACKMOL_ANION_INP,
+        packmol_water_file=PACKMOL_WATER_INP,
+        moltemplate_cation_file=MOLTEMPLATE_CATION_INP,
+        moltemplate_anion_file=MOLTEMPLATE_ANION_INP,
+        moltemplate_water_file=MOLTEMPLATE_WATER_INP,
     params:
-        monomer_file=f"../resources/packmol/{MONOMER_FILE_NAME}",
-        dimer_file=f"../resources/packmol/{DIMER_FILE_NAME}",
-        tolerance=2.0,  # Tolerance between constituent units in Angstrom
-        system_file="results/packmol/{sample}/system.xyz",
+        packmol_monomer_file=PACKMOL_MONOMER_INP,
+        packmol_dimer_file=PACKMOL_DIMER_INP,
+        tolerance=2.0,
+        packmol_output_xyz="results/packmol/{sample}/system.xyz",
         n_wat=lambda wc: input_dict[wc.sample]["n_wat"],
         n_monomer=lambda wc: input_dict[wc.sample]["n_monomer"],
         n_dimer=lambda wc: input_dict[wc.sample]["n_dimer"],
@@ -87,57 +92,7 @@ rule packmol_input:
         anion_radius=1.75,
         seed=-1,
     output:
-        packmol="results/packmol/{sample}/packmol.inp",
-    script:
-        "scripts/render_packmol.py"
-
-
-rule run_packmol:
-    localrule: True
-    input:
-        packmol=rules.packmol_input.output.packmol,
-    output:
         packmol="results/packmol/{sample}/system.xyz",
-    shell:
-        "packmol < {input.packmol}"
-
-
-rule moltemplate_input:
-    localrule: True
-    input:
-        template=f"../src/confi/templates/moltemplate_template.inp",
-        cation_file=Path(
-            f"../resources/moltemplate/" + CATION_FILE_NAME_MOLTEMPLATE
-        ).resolve(),
-        anion_file=Path(f"../resources/moltemplate/cl.lt").resolve(),
-        water_file=Path(f"../resources/moltemplate/tip4p_2005.lt").resolve(),
-    params:
-        n_free_cations=lambda wc: input_dict[wc.sample]["n_cations"],
-        n_free_anions=rules.packmol_input.params.n_free_anions,
-        n_wat=lambda wc: input_dict[wc.sample]["n_wat"],
-        n_monomer=rules.packmol_input.params.n_monomer,
-        n_dimer=rules.packmol_input.params.n_dimer,
-        x_box_length=rules.packmol_input.params.x_box_length,
-        y_box_length=rules.packmol_input.params.y_box_length,
-        z_box_length=rules.packmol_input.params.z_box_length,
-    output:
-        moltemplate="results/moltemplate/{sample}/system.lt",
+        moltemplate="results/moltemplate/{sample}/system.data",
     script:
-        "scripts/render_moltemplate.py"
-
-
-rule run_moltemplate:
-    localrule: True
-    input:
-        system=rules.moltemplate_input.output.moltemplate,
-        xyz=rules.run_packmol.output.packmol,
-    params:
-        moltemplate_dir="results/moltemplate/{sample}",
-        full_system_lt_path=str(
-            Path(rules.moltemplate_input.output.moltemplate).resolve()
-        ),
-        full_xyz_path=str(Path(rules.run_packmol.output.packmol).resolve()),
-    output:
-        data=Path("results/moltemplate/{sample}/system.data"),
-    shell:
-        'cd {params.moltemplate_dir} && moltemplate.sh -atomstyle "full" {params.full_system_lt_path} -xyz {params.full_xyz_path} && rm -rf output_ttree system.in.init system.in.settings run*'
+        "scripts/create_datafile.py"
