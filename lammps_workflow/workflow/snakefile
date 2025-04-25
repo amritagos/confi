@@ -18,7 +18,7 @@ BOX_DIMENSION = 30.0  # In Angstroms
 WATER_MODEL = "tip4p_2005"
 PACKMOL_CATION_INP = f"../resources/packmol/fe.xyz"
 PACKMOL_ANION_INP = f"../resources/packmol/cl.xyz"
-PACKMOL_WATER_INP = f"../resources/packmol/{WATER_MODEL}/{WATER_MODEL}_water.xyz"
+PACKMOL_WATER_INP = f"../resources/packmol/lammps/{WATER_MODEL}/{WATER_MODEL}_water.xyz"
 PACKMOL_MONOMER_INP = f"../resources/packmol/fe_cl.xyz"
 PACKMOL_DIMER_INP = f"../resources/packmol/fe_cl2.xyz"
 # Resource and input files, variables etc for Moltemplate

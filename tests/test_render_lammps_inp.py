@@ -126,7 +126,7 @@ def test_packmol_input():
         cation_file=package_root / Path(f"resources/packmol/fe.xyz"),
         anion_file=package_root / Path(f"resources/packmol/cl.xyz"),
         water_file=package_root
-        / Path(f"resources/packmol/tip4p_2005/tip4p_2005_water.xyz"),
+        / Path(f"resources/packmol/lammps/tip4p_2005/tip4p_2005_water.xyz"),
     )
     params = confi.parameters.PackmolParams(
         packmol_input=input,

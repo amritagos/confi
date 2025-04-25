@@ -1,5 +1,5 @@
 .snakemake*
-snmk_workflow/results/
+lammps_workflow/results/
 tests/output
 
 # Byte-compiled / optimized / DLL files
