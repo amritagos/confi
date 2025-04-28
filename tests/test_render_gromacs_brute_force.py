@@ -83,13 +83,13 @@ def find_ion_distribution(
     return free_cations, free_anions, monomers, dimers
 
 
-def set_atom_arrays(atoms: Atoms, atomtypes, residuenames, molecule_ids):
+def set_atom_arrays(atoms: Atoms, atomtypes, residuenames, residuenumbers):
     residuenames = np.array(residuenames)
     atomtypes = np.array(atomtypes)
-    molecule_ids = np.array(molecule_ids)
+    residuenumbers = np.array(residuenumbers)
     atoms.set_array("residuenames", residuenames)
     atoms.set_array("atomtypes", atomtypes)
-    atoms.set_array("molecule_ids", molecule_ids)
+    atoms.set_array("residuenumbers", residuenumbers)
 
 
 def get_water_molecules(
@@ -98,10 +98,10 @@ def get_water_molecules(
     ase_to_gro_dict: dict[str:str],
     atomtypes: list[str],
     residuenames: list[str],
-    molecule_ids: list[int],
+    residuenumbers: list[int],
 ):
     """From an input Atoms object (atoms_unordered), add water molecules in a specific way into the output atoms object (atoms).
-    The lists atomtypes, residuenames and molecule_ids are updated as molecules are added to the ASE atoms object.
+    The lists atomtypes, residuenames and residuenumbers are updated as molecules are added to the ASE atoms object.
 
     Args:
         atoms_unordered (Atoms): input Atoms object which may contain several types of molecules and species
@@ -109,7 +109,7 @@ def get_water_molecules(
         ase_to_gro_dict (dict): ASE atom symbols are keys and the GROMACS symbol is the value (does not have to correspond to an actual atom symbol)
         atomtypes (list[str]): GROMACS symbols for each atom
         residuenames (list[str]): Name of the residue in GROMACS
-        molecule_ids (list[int]): Molecule ID of the atom (all atoms belonging to the same molecule have the same molecule ID)
+        residuenumbers (list[int]): Molecule ID of the atom (all atoms belonging to the same molecule have the same molecule ID)
     """
     atom_count = 1
     # Get the water molecules first
@@ -127,7 +127,7 @@ def get_water_molecules(
             atomtypes.append(ase_to_gro_dict["X"][0])  # M
             for i in range(4):
                 residuenames.append(f"water")
-                molecule_ids.append(atom_count)
+                residuenumbers.append(atom_count)
             atom_count += 1
 
 
@@ -138,7 +138,7 @@ def get_ions(
     ase_to_gro_dict: dict[str:str],
     atomtypes: list[str],
     residuenames: list[str],
-    molecule_ids: list[int],
+    residuenumbers: list[int],
 ):
     atom_count = len(atoms)
     for i in indices:
@@ -146,7 +146,7 @@ def get_ions(
         atoms.append(atom)
         atomtypes.append(ase_to_gro_dict[atom.symbol][0])
         residuenames.append(f"{ase_to_gro_dict[atom.symbol][0]}")
-        molecule_ids.append(atom_count)
+        residuenumbers.append(atom_count)
         atom_count += 1
 
 
@@ -158,10 +158,10 @@ def get_monomer(
     ase_to_gro_dict: dict[str:str],
     atomtypes: list[str],
     residuenames: list[str],
-    molecule_ids: list[int],
+    residuenumbers: list[int],
 ):
     """From an input Atoms object (atoms_unordered), add monomer units in a specific way into the output atoms object (atoms).
-    The lists atomtypes, residuenames and molecule_ids are updated as "molecules" or units are added to the ASE atoms object.
+    The lists atomtypes, residuenames and residuenumbers are updated as "molecules" or units are added to the ASE atoms object.
 
     Args:
         atoms_unordered (Atoms): Atoms object which may contain many species
@@ -171,10 +171,10 @@ def get_monomer(
         ase_to_gro_dict (dict[str:str]): ASE atom symbols are keys and the GROMACS symbol is the value (does not have to correspond to an actual atom symbol)
         atomtypes (list[str]):  GROMACS symbols for each atom
         residuenames (list[str]): Name of the residue in GROMACS
-        molecule_ids (list[int]): Molecule ID of each atom (all atoms belonging to the same molecule have the same molecule ID)
+        residuenumbers (list[int]): Molecule ID of each atom (all atoms belonging to the same molecule have the same molecule ID)
     """
     try:
-        molecule_count = molecule_ids[-1] + 1
+        molecule_count = residuenumbers[-1] + 1
     except:
         molecule_count = len(atoms)
 
@@ -187,7 +187,7 @@ def get_monomer(
         atomtypes.append(ase_to_gro_dict[atoms_unordered[i_anion].symbol][1])  # ClM
         for i in range(2):
             residuenames.append(f"{residuename}")
-            molecule_ids.append(molecule_count)
+            residuenumbers.append(molecule_count)
         molecule_count += 1
 
 
@@ -199,10 +199,10 @@ def get_dimer(
     ase_to_gro_dict: dict[str:str],
     atomtypes: list[str],
     residuenames: list[str],
-    molecule_ids: list[int],
+    residuenumbers: list[int],
 ):
     """From an input Atoms object (atoms_unordered), add dimer units in a specific way into the output atoms object (atoms).
-    The lists atomtypes, residuenames and molecule_ids are updated as "molecules" or units are added to the ASE atoms object.
+    The lists atomtypes, residuenames and residuenumbers are updated as "molecules" or units are added to the ASE atoms object.
 
     Args:
         atoms_unordered (Atoms): Atoms object which may contain many species
@@ -212,10 +212,10 @@ def get_dimer(
         ase_to_gro_dict (dict[str:str]): ASE atom symbols are keys and the GROMACS symbol is the value (does not have to correspond to an actual atom symbol)
         atomtypes (list[str]):  GROMACS symbols for each atom
         residuenames (list[str]): Name of the residue in GROMACS
-        molecule_ids (list[int]): Molecule ID of each atom (all atoms belonging to the same molecule have the same molecule ID)
+        residuenumbers (list[int]): Molecule ID of each atom (all atoms belonging to the same molecule have the same molecule ID)
     """
     try:
-        molecule_count = molecule_ids[-1] + 1
+        molecule_count = residuenumbers[-1] + 1
     except:
         molecule_count = len(atoms)
 
@@ -231,7 +231,7 @@ def get_dimer(
         atomtypes.append(ase_to_gro_dict[atoms_unordered[i_anion1].symbol][2])  # ClD
         for i in range(3):
             residuenames.append(f"{residuename}")
-            molecule_ids.append(molecule_count)
+            residuenumbers.append(molecule_count)
         molecule_count += 1
 
 
@@ -279,10 +279,10 @@ def test_gromacs_input(test_packmol_input_gromacs):
     # Things for writing out GROMOS files
     atomtypes = []
     residuenames = []
-    molecule_ids = []
+    residuenumbers = []
 
     get_water_molecules(
-        atoms_unordered, atoms, ase_to_gro_dict, atomtypes, residuenames, molecule_ids
+        atoms_unordered, atoms, ase_to_gro_dict, atomtypes, residuenames, residuenumbers
     )
 
     # Now get the free cations, free anions, bound cations and bound anions
@@ -308,7 +308,7 @@ def test_gromacs_input(test_packmol_input_gromacs):
         ase_to_gro_dict,
         atomtypes,
         residuenames,
-        molecule_ids,
+        residuenumbers,
     )
     # Free anions
     get_ions(
@@ -318,7 +318,7 @@ def test_gromacs_input(test_packmol_input_gromacs):
         ase_to_gro_dict,
         atomtypes,
         residuenames,
-        molecule_ids,
+        residuenumbers,
     )
     # Fe-Cl monomer
     name_monomer = "FeClM"
@@ -330,7 +330,7 @@ def test_gromacs_input(test_packmol_input_gromacs):
         ase_to_gro_dict,
         atomtypes,
         residuenames,
-        molecule_ids,
+        residuenumbers,
     )
 
     # Cl-Fe-Cl dimer
@@ -343,11 +343,11 @@ def test_gromacs_input(test_packmol_input_gromacs):
         ase_to_gro_dict,
         atomtypes,
         residuenames,
-        molecule_ids,
+        residuenumbers,
     )
 
     # Set the arrays
-    set_atom_arrays(atoms, atomtypes, residuenames, molecule_ids)
+    set_atom_arrays(atoms, atomtypes, residuenames, residuenumbers)
     # Write out the gromacs files
     with open(output_g96, "w") as f:
         confi.io.write_gromos(f, atoms)

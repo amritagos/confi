@@ -7,7 +7,7 @@ def write_gromos(fileobj, atoms: Atoms):
 
     If residuenames are not provided, all atoms get a residuename of 1DUM
     If atomtypes are not provided, chemical symbols from ASE are used
-    If molecule IDs are not provided, every molecule ID is set as the index+1
+    If residuenumbers (molecule IDs) are not provided, every molecule ID is set as the index+1
 
     Writes out:
     atom positions,
@@ -29,7 +29,7 @@ def write_gromos(fileobj, atoms: Atoms):
     except KeyError:
         gromos_atomtypes = atoms.get_chemical_symbols()
     try:
-        gromos_molecule_ids = atoms.get_array("molecule_ids")
+        gromos_molecule_ids = atoms.get_array("residuenumbers")
     except KeyError:
         gromos_molecule_ids = [i + 1 for i in range(natoms)]
 
