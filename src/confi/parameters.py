@@ -6,6 +6,12 @@ from enum import Enum
 
 
 class FileType(Enum):
+    """Input file types allowed for PACKMOL
+
+    Args:
+        Enum (str): File extensions for allowed input file types in PACKMOL
+    """
+
     XYZ = "xyz"
     PDB = "pdb"
 
