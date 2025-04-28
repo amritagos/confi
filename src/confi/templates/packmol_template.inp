@@ -5,7 +5,7 @@ tolerance {{params.tolerance}}
 
 # The files are in the simple Molden-xyz format
 
-filetype xyz
+filetype {{input.filetype.value}}
 
 # The name of the output file.
 

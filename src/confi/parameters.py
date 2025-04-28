@@ -2,9 +2,16 @@ from pydantic import BaseModel, model_validator
 from pydantic.fields import Field
 from typing import Optional, Self
 from pathlib import Path
+from enum import Enum
+
+
+class FileType(Enum):
+    XYZ = "xyz"
+    PDB = "pdb"
 
 
 class PackmolInput(BaseModel):
+    filetype: FileType = FileType.XYZ  # Can be either "xyz" or "pdb"
     cation_file: Optional[Path] = None
     anion_file: Optional[Path] = None
     water_file: Optional[Path] = None

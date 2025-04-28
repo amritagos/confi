@@ -1,0 +1,17 @@
+# All atoms from different molecules will be at least 2.0 Angstroms apart
+# from each other at the solution.
+
+tolerance 2.0
+
+filetype pdb
+
+# The name of the output file.
+
+output system.pdb
+
+seed -1
+
+structure tip4p_2005_water.pdb
+  number 5
+  inside box 0. 0. 0. 10.0 10.0 10.0
+end structure
