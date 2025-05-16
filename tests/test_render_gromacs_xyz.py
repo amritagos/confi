@@ -235,7 +235,7 @@ def get_dimer(
         molecule_count += 1
 
 
-def test_gromacs_input(test_packmol_input_gromacs):
+def test_gromacs_input(test_packmol_input_gromacs_xyz):
     """Using the PACKMOL generated XYZ file as input, create a LAMMPS data file"""
     package_root = Path(__file__).parent.parent.resolve()  # top-level directory
     output_g96 = package_root / Path(
@@ -248,7 +248,7 @@ def test_gromacs_input(test_packmol_input_gromacs):
 
     output_g96.parent.mkdir(parents=True, exist_ok=True)
 
-    packmol_params = test_packmol_input_gromacs
+    packmol_params = test_packmol_input_gromacs_xyz
 
     # Dictionary from the PackmolParams class
     packmol_param_dict = packmol_params.model_dump()
