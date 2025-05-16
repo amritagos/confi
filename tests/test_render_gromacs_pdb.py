@@ -48,6 +48,15 @@ def test_gromacs_input(test_packmol_input_gromacs_pdb):
 
     # Read in the XYZ file
     atoms = read(packmol_param_dict["system_file"], format="proteindatabank")
+    # Update the box lengths
+    atoms.set_cell(
+        [
+            packmol_param_dict["x_box_length"],
+            packmol_param_dict["y_box_length"],
+            packmol_param_dict["z_box_length"],
+        ]
+    )
+    atoms.set_pbc([True, True, True])
     # Renumber the molecule IDs or residuenumbers
     renumber_residuenumbers(atoms)
 
