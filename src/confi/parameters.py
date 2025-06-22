@@ -38,12 +38,12 @@ class PackmolParams(BaseModel):
     cation_file: Optional[Path] = (
         None  # if n_free_cations is greater than 0 then this cannot be None
     )
-    cation_radius: float = Field(gt=0, default=1.75)  # overrides the tolerance
+    cation_radius: float = Field(gt=0, default=1.5)  # overrides the tolerance
     n_free_anions: int = Field(ge=0, default=0)  # free anions
     anion_file: Optional[Path] = (
         None  # if n_free_cations is greater than 0 then this cannot be None
     )
-    anion_radius: float = Field(gt=0, default=1.75)  # overrides the tolerance
+    anion_radius: float = Field(gt=0, default=1.5)  # overrides the tolerance
     n_monomer: int = Field(ge=0, default=0)  # Number of cation-anion units
     monomer_file: Optional[Path] = (
         None  # if n_monomer is greater than 0 you must input this or PACKMOL will fail
