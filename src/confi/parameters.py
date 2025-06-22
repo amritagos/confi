@@ -48,10 +48,12 @@ class PackmolParams(BaseModel):
     monomer_file: Optional[Path] = (
         None  # if n_monomer is greater than 0 you must input this or PACKMOL will fail
     )
+    monomer_radius: float = Field(gt=0, default=1.5)  # overrides the tolerance
     n_dimer: int = Field(ge=0, default=0)  # Number of anion-cation-anion units
     dimer_file: Optional[Path] = (
         None  # if n_dimer is greater than 0 you must input this or PACKMOL will fail
     )
+    dimer_radius: float = Field(gt=0, default=1.5)  # overrides the tolerance
     tolerance: float = Field(
         gt=0, default=2.0
     )  # minimum distance between subunits in PACKMOL. can be overriden by radius

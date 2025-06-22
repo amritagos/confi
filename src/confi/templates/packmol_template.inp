@@ -11,21 +11,23 @@ filetype {{input.filetype.value}}
 
 output {{params.system_file}}
 
+# All molecules will be set to stay in the box defined by minimum and maximum coordinates
+
+pbc 0. 0. 0. {{params.x_box_length}} {{params.y_box_length}} {{params.z_box_length}}
+
 seed {{params.seed}}
 
 {% if params.n_monomer > 0 %}
 structure {{params.monomer_file}}
   number {{params.n_monomer}}
-  radius 1.75
-  inside box 0. 0. 0. {{params.x_box_length}} {{params.y_box_length}} {{params.z_box_length}}
+  radius {{params.monomer_radius}}
 end structure
 {% endif %}
 
 {% if params.n_dimer > 0 %}
 structure {{params.dimer_file}}
   number {{params.n_dimer}}
-  radius 1.75
-  inside box 0. 0. 0. {{params.x_box_length}} {{params.y_box_length}} {{params.z_box_length}}
+  radius {{params.dimer_radius}}
 end structure
 {% endif %}
 
@@ -33,7 +35,6 @@ end structure
 structure {{input.cation_file}}
   number {{params.n_free_cations}}
   radius {{params.cation_radius}}
-  inside box 0. 0. 0. {{params.x_box_length}} {{params.y_box_length}} {{params.z_box_length}}
 end structure
 {% endif %}
 
@@ -41,13 +42,11 @@ end structure
 structure {{input.anion_file}}
   number {{params.n_free_anions}}
   radius {{params.anion_radius}}
-  inside box 0. 0. 0. {{params.x_box_length}} {{params.y_box_length}} {{params.z_box_length}}
 end structure
 {% endif %}
 
 {% if params.n_wat > 0 %}
 structure {{input.water_file}}
   number {{params.n_wat}}
-  inside box 0. 0. 0. {{params.x_box_length}} {{params.y_box_length}} {{params.z_box_length}}
 end structure
 {% endif %}
