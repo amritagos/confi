@@ -57,8 +57,8 @@ def test_gromacs_input(test_packmol_input_gromacs_pdb):
         ]
     )
     atoms.set_pbc([True, True, True])
-    # Renumber the molecule IDs or residuenumbers
-    renumber_residuenumbers(atoms)
+    # # Renumber the molecule IDs or residuenumbers
+    # renumber_residuenumbers(atoms)
 
     # Write out the gromacs files
     with open(output_g96, "w") as f:

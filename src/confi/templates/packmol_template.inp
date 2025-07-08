@@ -19,6 +19,9 @@ seed {{params.seed}}
 
 {% if params.n_monomer > 0 %}
 structure {{params.monomer_file}}
+  {% if params.resnumbers > 0 %}
+  resnumbers {{params.resnumbers}}
+  {% endif %}
   number {{params.n_monomer}}
   radius {{params.monomer_radius}}
 end structure
@@ -26,6 +29,9 @@ end structure
 
 {% if params.n_dimer > 0 %}
 structure {{params.dimer_file}}
+  {% if params.resnumbers > 0 %}
+  resnumbers {{params.resnumbers}}
+  {% endif %}
   number {{params.n_dimer}}
   radius {{params.dimer_radius}}
 end structure
@@ -33,6 +39,9 @@ end structure
 
 {% if params.n_free_cations > 0 %}
 structure {{input.cation_file}}
+  {% if params.resnumbers > 0 %}
+  resnumbers {{params.resnumbers}}
+  {% endif %}
   number {{params.n_free_cations}}
   radius {{params.cation_radius}}
 end structure
@@ -40,6 +49,9 @@ end structure
 
 {% if params.n_free_anions > 0 %}
 structure {{input.anion_file}}
+  {% if params.resnumbers > 0 %}
+  resnumbers {{params.resnumbers}}
+  {% endif %}
   number {{params.n_free_anions}}
   radius {{params.anion_radius}}
 end structure
@@ -47,6 +59,9 @@ end structure
 
 {% if params.n_wat > 0 %}
 structure {{input.water_file}}
+  {% if params.resnumbers > 0 %}
+  resnumbers {{params.resnumbers}}
+  {% endif %}
   number {{params.n_wat}}
 end structure
 {% endif %}

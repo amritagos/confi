@@ -60,6 +60,7 @@ class PackmolParams(BaseModel):
     seed: int = (
         -1
     )  # PACKMOL uses -1 to generate a seed automatically from the computer time.
+    resnumbers: int = 0
 
     @model_validator(mode="after")
     def check_required_files(self) -> Self:

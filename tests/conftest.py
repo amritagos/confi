@@ -109,6 +109,7 @@ def test_packmol_input_lammps():
         x_box_length=box_length,
         y_box_length=box_length,
         z_box_length=box_length,
+        resnumbers=0
     )
 
     # Actually render the input file :
@@ -286,6 +287,7 @@ def test_packmol_input_gromacs_pdb():
         x_box_length=box_length,
         y_box_length=box_length,
         z_box_length=box_length,
+        resnumbers=3,
     )
 
     # Actually render the input file :
