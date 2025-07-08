@@ -1,5 +1,7 @@
 .snakemake*
 lammps_workflow/results/
+gromacs_workflow/results/
+gromacs_workflow/config/samples.csv
 tests/output
 
 # Byte-compiled / optimized / DLL files

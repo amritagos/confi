@@ -1,0 +1,28 @@
+__use_yte__: true
+
+# The CSV file containing per sample information.
+# You must generate this first, with the generate_samples.py file!
+samples: config/samples.csv
+
+# General variables required for the Snakefile
+# Constrained bond length within monomers
+bond_length_cation_anion: 2.33 # Angstrom (used for LAMMPS bond coeff command)
+
+# Input XYZ files required for PACKMOL
+# Relative paths should be relative to the workflow folder
+# The box dimension should be provided for each sample
+# Therefore it will not be provided here
+packmol:
+  x_box_length: 52.66
+  y_box_length: 52.66
+  z_box_length: 52.66
+  cation_inp: ../resources/packmol/fe.pdb
+  anion_inp: ../resources/packmol/cl.pdb
+  water_inp: ../resources/packmol/gromacs/tip4p_2005/tip4p_2005_water.pdb
+  monomer_inp: ../resources/packmol/fe_cl.pdb
+  dimer_inp: ../resources/packmol/fe_cl2.pdb
+  tolerance: 2.0 # Tolerance between each atom. Is overriden by radius
+  cation_radius: 1.5 # Generally the radius is at least half the tolerance but you can increase it
+  anion_radius: 1.5
+  monomer_radius: 1.5
+  dimer_radius: 1.5

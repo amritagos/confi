@@ -1,0 +1,51 @@
+import pandas as pd
+from pathlib import Path
+
+
+configfile: "config/general_config.yml"  # Path to config file containing general variables, relative to the workflow folder
+
+
+# Load the sample data from the generated CSV file.
+# IMPORTANT: Make sure to generate the samples.csv file with the generate_samples.py script!
+samples = (
+    pd.read_csv(config["samples"], dtype={"sample_name": str})
+    .set_index("sample_name", drop=False)
+    .sort_index()
+)
+
+
+rule all:
+    input:
+        expand("results/gromacs/{sample}/system.g96", sample=samples.index),
+
+
+# Create boxes with the desired box lengths
+rule create_data:
+    localrule: True
+    input:
+        packmol_cation_file=config["packmol"]["cation_inp"],  # from the configuration file
+        packmol_anion_file=config["packmol"]["anion_inp"],
+        packmol_water_file=config["packmol"]["water_inp"],
+    params:
+        packmol_monomer_file=config["packmol"]["monomer_inp"],
+        packmol_dimer_file=config["packmol"]["dimer_inp"],
+        tolerance=config["packmol"]["tolerance"],
+        packmol_output_xyz="results/packmol/{sample}/system.xyz",
+        n_wat=lambda wc: samples.loc[wc.sample, "n_wat"],
+        n_monomer=lambda wc: samples.loc[wc.sample, "n_monomer"],
+        n_dimer=lambda wc: samples.loc[wc.sample, "n_dimer"],
+        n_free_cations=lambda wc: samples.loc[wc.sample, "n_cations"],
+        n_free_anions=lambda wc: samples.loc[wc.sample, "n_anions"],
+        x_box_length=config["packmol"]["x_box_length"],
+        y_box_length=config["packmol"]["y_box_length"],
+        z_box_length=config["packmol"]["z_box_length"],
+        cation_radius=config["packmol"]["cation_radius"],  # Generally the radius is at least half the tolerance but you can increase it 
+        anion_radius=config["packmol"]["anion_radius"],
+        monomer_radius=config["packmol"]["monomer_radius"],
+        dimer_radius=config["packmol"]["dimer_radius"],
+        seed=lambda wc: samples.loc[wc.sample, "seed"],
+    output:
+        packmol="results/packmol/{sample}/system.xyz",
+        g96_file="results/gromacs/{sample}/system.g96",
+    script:
+        "scripts/create_datafile.py"
