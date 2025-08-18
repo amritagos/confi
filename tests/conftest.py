@@ -172,7 +172,7 @@ def test_packmol_input_gromacs_xyz():
     total_cations = free_cations + n_monomers + n_dimers
     total_anions = 2 * total_cations  # FeCl2 being simulated
     free_anions = total_anions - n_monomers - 2 * n_dimers
-    box_length = 10  # in Angstrom, as are all distances
+    box_length = 15  # in Angstrom, as are all distances
 
     # Create PackmolParams and PackmolInput for the parameters and inputs required by the Jinja2 renderer
     # Use absolute paths wherever possible
