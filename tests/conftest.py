@@ -83,7 +83,7 @@ def test_packmol_input_lammps():
     total_cations = free_cations + n_monomers + n_dimers
     total_anions = 2 * total_cations  # FeCl2 being simulated
     free_anions = total_anions - n_monomers - 2 * n_dimers
-    box_length = 10  # in Angstrom, as are all distances
+    box_length = 15  # in Angstrom, as are all distances
 
     # Create PackmolParams and PackmolInput for the parameters and inputs required by the Jinja2 renderer
     # Use absolute paths wherever possible
@@ -109,7 +109,7 @@ def test_packmol_input_lammps():
         x_box_length=box_length,
         y_box_length=box_length,
         z_box_length=box_length,
-        resnumbers=0
+        resnumbers=0,
     )
 
     # Actually render the input file :
