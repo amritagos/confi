@@ -7,7 +7,7 @@ import numpy as np
 
 from ase.atoms import Atoms
 from ase.calculators.lammps import Prism, convert
-from ase.data import atomic_masses, atomic_numbers
+from ase.data import atomic_masses, atomic_numbers, chemical_symbols
 
 
 def _write_masses(fd, atoms: Atoms, species: list, units: str):
@@ -384,3 +384,100 @@ def write_gromos(fileobj, atoms: Atoms, write_velocities=False):
         grocell = mycell.flat[[0, 4, 8, 1, 2, 3, 5, 6, 7]] * 0.1
         fileobj.write("".join([f"{x:15.9f}" for x in grocell]))
         fileobj.write("\nEND\n")
+
+
+def read_gromos(fileobj, dummy_site_symbols: list = ["MW4"]):
+    """Read gromos geometry files (.g96).
+    dummy_site_symbols : list of symbols to assign type X
+    Reads:
+    atom positions (nm),
+    velocities (nm/ps)
+    and simulation cell (if present)
+    tries to set atom types
+    """
+
+    lines = fileobj.readlines()
+    read_pos = False
+    read_vel = False
+    read_box = False
+    tmp_pos = []
+    tmp_vel = []
+    symbols = []
+    residuenumbers = []  # or molecule ID
+    residuenames = []  # residuenames
+    atomtypes = []  # atom types
+    mycell = None
+    for line in lines:
+        if read_pos and ("END" in line):
+            read_pos = False
+        if read_box and ("END" in line):
+            read_box = False
+        if read_vel and ("END" in line):
+            read_vel = False
+        if read_pos:
+            residuenumber, residuename, symbol, _dummy, x, y, z = line.split()[0:7]
+            residuenumbers.append(residuenumber)
+            residuenames.append(residuename)
+            atomtypes.append(symbol)
+            tmp_pos.append(
+                (10 * float(x), 10 * float(y), 10 * float(z))
+            )  # convert to Angstrom
+            raw = symbol.strip()
+            # 1) Dummies first
+            if raw in dummy_site_symbols:
+                symbols.append("X")
+            # 2) Exact match to an element (e.g., Fe, Cl, O, H)
+            elif raw in chemical_symbols:
+                symbols.append(raw)
+            # 3) Try two-character canonicalization (e.g., fe -> Fe, CL -> Cl)
+            elif (
+                len(raw) >= 2 and (raw[0].upper() + raw[1].lower()) in chemical_symbols
+            ):
+                symbols.append(raw[0].upper() + raw[1].lower())
+            # 4) Try single-character element (e.g., o -> O)
+            elif (raw[0].upper()) in chemical_symbols:
+                symbols.append(raw[0].upper())
+            # 5) Give up
+            else:
+                raise RuntimeError(
+                    f"Symbol '{raw}' not in chemical symbols or dummy list"
+                )
+        if read_vel:
+            parts = line.split()
+            if len(parts) < 7:
+                continue
+            vx, vy, vz = line.split()[4:7]
+            conversion_factor = 1000.0 * units.fs / units.nm
+            tmp_vel.append(
+                (
+                    float(vx) / conversion_factor,
+                    float(vy) / conversion_factor,
+                    float(vz) / conversion_factor,
+                )
+            )  # convert from nm/ps
+        if read_box:
+            try:
+                grocell = list(map(float, line.split()))
+            except ValueError:
+                pass
+            else:
+                mycell = np.diag(grocell[:3])
+                if len(grocell) >= 9:
+                    mycell.flat[[1, 2, 3, 5, 6, 7]] = grocell[3:9]
+                mycell *= 10.0
+        if "POSITION" in line:
+            read_pos = True
+        if "BOX" in line:
+            read_box = True
+        if "VELOCITY" in line:
+            read_vel = True
+
+    gmx_system = Atoms(symbols=symbols, positions=tmp_pos, cell=mycell)
+    gmx_system.set_velocities(tmp_vel)
+    # Set the residuenumbers and residuenames
+    gmx_system.arrays["residuenumbers"] = np.array(residuenumbers, dtype=int)
+    gmx_system.arrays["residuenames"] = np.array(residuenames, dtype=object)
+    gmx_system.arrays["atomtypes"] = np.array(atomtypes, dtype=object)
+    if mycell is not None:
+        gmx_system.pbc = True
+    return gmx_system
