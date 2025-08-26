@@ -136,7 +136,7 @@ def write_lammps_data(
                         n_angle_types = angle_type
         fileobj.write(f"{n_angles} angles\n")
 
-    # types 
+    # types
     fileobj.write(f"\n{n_atom_types} atom types\n")
     if bonds and (atom_style == "full") and (atoms.arrays.get("bonds") is not None):
         fileobj.write(f"{n_bond_types} bond types\n")
@@ -254,6 +254,13 @@ def write_lammps_data(
                 line += f" {img[0]:6d} {img[1]:6d} {img[2]:6d}"
             line += "\n"
             fileobj.write(line)
+        if velocities and atoms.get_velocities() is not None:
+            fileobj.write("\nVelocities\n\n")
+            vel = prismobj.vector_to_lammps(atoms.get_velocities())
+            # Convert velocity from ASE units to LAMMPS units
+            vel = convert(vel, "velocity", "ASE", units)
+        for i, v in enumerate(vel):
+            fileobj.write(f"{i + 1:>6} {v[0]:23.17g} {v[1]:23.17g} {v[2]:23.17g}\n")
         if bonds and (atoms.arrays.get("bonds") is not None):
             fileobj.write("\nBonds\n\n")
             for i in range(n_bonds):
@@ -274,18 +281,38 @@ def write_lammps_data(
     else:
         raise ValueError(atom_style)
 
-    if velocities and atoms.get_velocities() is not None:
-        fileobj.write("\n\nVelocities\n\n")
-        vel = prismobj.vector_to_lammps(atoms.get_velocities())
-        # Convert velocity from ASE units to LAMMPS units
-        vel = convert(vel, "velocity", "ASE", units)
-        for i, v in enumerate(vel):
-            fileobj.write(f"{i + 1:>6} {v[0]:23.17g} {v[1]:23.17g} {v[2]:23.17g}\n")
-
     fileobj.flush()
 
 
-def write_gromos(fileobj, atoms: Atoms):
+def write_block(
+    fileobj,
+    gromos_residuenames,
+    gromos_atomtypes,
+    gromos_molecule_ids,
+    quantity,
+    label="POSITION",
+):
+    fileobj.write(label + "\n")
+    count = 1
+    rescount = 0
+    old_molid = 0
+    for resname, atomtype, mol_id, xyz in zip(
+        gromos_residuenames, gromos_atomtypes, gromos_molecule_ids, quantity
+    ):
+        if mol_id != old_molid:
+            old_molid = mol_id
+            rescount = rescount + 1
+        okresname = resname.lstrip("0123456789 ")
+        fileobj.write(
+            "%5d %-5s %-5s%7d%15.9f%15.9f%15.9f\n"
+            % (rescount, okresname, atomtype, count, xyz[0], xyz[1], xyz[2])
+        )
+        count = count + 1
+
+    fileobj.write("END\n")
+
+
+def write_gromos(fileobj, atoms: Atoms, write_velocities=False):
     """Write gromos geometry files (.g96), given an ASE atoms object.
     Arrays in the Atoms object that are used: atomtypes, residuenames and molecule_ids.
 
@@ -297,6 +324,7 @@ def write_gromos(fileobj, atoms: Atoms):
     atom positions,
     and simulation cell (if present)
     Positions are written out in nm (default in GROMACS) not Angstrom (default in ASE)
+    write_velocities: False by default. Write velocities in nm/ps
     """
 
     from ase import units
@@ -329,24 +357,26 @@ def write_gromos(fileobj, atoms: Atoms):
     fileobj.write("TITLE\n")
     fileobj.write("Gromos96 structure file written by ASE \n")
     fileobj.write("END\n")
-    fileobj.write("POSITION\n")
-    count = 1
-    rescount = 0
-    old_molid = 0
-    for resname, atomtype, mol_id, xyz in zip(
-        gromos_residuenames, gromos_atomtypes, gromos_molecule_ids, pos
-    ):
-        if mol_id != old_molid:
-            old_molid = mol_id
-            rescount = rescount + 1
-        okresname = resname.lstrip("0123456789 ")
-        fileobj.write(
-            "%5d %-5s %-5s%7d%15.9f%15.9f%15.9f\n"
-            % (rescount, okresname, atomtype, count, xyz[0], xyz[1], xyz[2])
-        )
-        count = count + 1
 
-    fileobj.write("END\n")
+    # Position block
+    write_block(
+        fileobj,
+        gromos_residuenames,
+        gromos_atomtypes,
+        gromos_molecule_ids,
+        pos,
+        label="POSITION",
+    )
+
+    if write_velocities:
+        write_block(
+            fileobj,
+            gromos_residuenames,
+            gromos_atomtypes,
+            gromos_molecule_ids,
+            vel,
+            label="VELOCITY",
+        )
 
     if atoms.get_pbc().any():
         fileobj.write("BOX\n")
