@@ -49,7 +49,7 @@ def test_convert_pdb(test_packmol_input_gromacs_pdb):
     """Using the PACKMOL generated PDB file as input, create a LAMMPS data file"""
     package_root = Path(__file__).parent.parent.resolve()  # top-level directory
     output_data = package_root / Path(
-        "tests/output/lammps/system_from_pdb.data"
+        "tests/output/conversion/system_from_pdb.data"
     )  # relative to the top-level directory
 
     output_data.parent.mkdir(parents=True, exist_ok=True)
@@ -108,8 +108,16 @@ def test_convert_pdb(test_packmol_input_gromacs_pdb):
     # The molecule IDs are residuenumbers
     atoms.arrays["mol-id"] = atoms.get_array("residuenumbers")
 
+    # uniform random numbers between -0.1 and 0.1 Å/fs
+    vels = np.random.uniform(-0.1, 0.1, size=(len(atoms), 3))
+    atoms.set_velocities(vels)
+
     # Write out the LAMMPS data file
     with open(output_data, "w") as f:
         confi.io.write_lammps_data(
-            f, atoms, specorder=["O", "H", "Fe", "Cl"], atom_style="full"
+            f,
+            atoms,
+            specorder=["O", "H", "Fe", "Cl"],
+            atom_style="full",
+            velocities=True,
         )
