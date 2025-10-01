@@ -76,14 +76,22 @@ class PackmolParams(BaseModel):
                 "n_free_anions > 0 but packmol_input.anion_file has not been provided."
             )
         # Check monomer_file if n_monomer > 0
-        if self.n_monomer > 0 and self.monomer_file is None:
+        if (
+            self.n_monomer is not None
+            and self.n_monomer > 0
+            and self.monomer_file is None
+        ):
             errors.append("n_monomer > 0 but monomer_file has not been provided.")
         # Check dimer_file if n_dimer > 0
-        if self.n_dimer > 0 and self.dimer_file is None:
+        if self.n_dimer is not None and self.n_dimer > 0 and self.dimer_file is None:
             errors.append("n_dimer > 0 but dimer_file has not been provided.")
 
         # Check water_file if n_wat>0
-        if self.n_wat > 0 and self.packmol_input.water_file is None:
+        if (
+            self.n_wat is not None
+            and self.n_wat > 0
+            and self.packmol_input.water_file is None
+        ):
             errors.append("n_wat > 0 but water_file has not been provided.")
 
         if errors:
@@ -100,13 +108,13 @@ class MoltemplateInput(BaseModel):
 class MoltemplateParams(BaseModel):
 
     moltemplate_input: MoltemplateInput
-    n_free_cations: int = Field(ge=0, default=0)
-    n_free_anions: int = Field(ge=0, default=0)  # free anions
-    n_wat: int = Field(ge=0, default=0)  # Number of water molecules
-    n_monomer: int = Field(
+    n_free_cations: Optional[int] = Field(ge=0, default=0)
+    n_free_anions: Optional[int] = Field(ge=0, default=0)  # free anions
+    n_wat: Optional[int] = Field(ge=0, default=0)  # Number of water molecules
+    n_monomer: Optional[int] = Field(
         ge=0, default=0
     )  # Number of cation-anion units (should be inside the cation file)
-    n_dimer: int = Field(
+    n_dimer: Optional[int] = Field(
         ge=0, default=0
     )  # Number of anion-cation-anion units (definition should be inside cation file)
     x_box_length: float = Field(gt=0)  # Box length in the x-dimension
