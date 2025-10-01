@@ -1,6 +1,12 @@
+{% if params.n_wat is not none and params.n_wat > 0 %}
 import {{input.water_file}}
+{% endif %}
+{% if params.n_free_cations is not none and params.n_free_cations > 0 %}
 import {{input.cation_file}}
+{% endif %}
+{% if params.n_free_anions is not none and params.n_free_anions > 0 %}
 import {{input.anion_file}}
+{% endif %}
 
 {% if params.n_monomer is not none and params.n_monomer > 0 %}
 monomer = new Monomer[{{params.n_monomer}}]
