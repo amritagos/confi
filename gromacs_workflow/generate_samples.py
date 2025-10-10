@@ -73,8 +73,10 @@ if __name__ == "__main__":
     total_monomer = [0]
     total_dimer = [320]
     total_water = [4440 for m in molality]
-    total_oct_water_shell = [0 for m in molality]
-    run_number = 5  # Number of runs to perform per system
+    total_oct_water_shell = [0 for m in molality]  # this is always zero
+    run_number = (
+        5  # Number of runs (configurations created per seed) to perform per system
+    )
     output_csv = Path("config/samples.csv")  # samples will be written in tabular form
 
     main(
