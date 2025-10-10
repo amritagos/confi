@@ -1,0 +1,4 @@
+ATOM      1  ZnD DIM    1        0.000  0.0000   0.000  1.00  0.00      DIM  Zn
+ATOM      2  ClD DIM    1        2.330  0.0000   0.000  1.00  0.00      DIM  Cl
+ATOM      3  ClD DIM    1       -2.330  0.0000   0.000  1.00  0.00      DIM  Cl
+END
