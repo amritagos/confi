@@ -37,6 +37,26 @@ structure {{params.dimer_file}}
 end structure
 {% endif %}
 
+{% if params.n_trimer > 0 %}
+structure {{params.trimer_file}}
+  {% if params.resnumbers > 0 %}
+  resnumbers {{params.resnumbers}}
+  {% endif %}
+  number {{params.n_trimer}}
+  radius {{params.trimer_radius}}
+end structure
+{% endif %}
+
+{% if params.n_tetrahedral > 0 %}
+structure {{params.tetrahedral_file}}
+  {% if params.resnumbers > 0 %}
+  resnumbers {{params.resnumbers}}
+  {% endif %}
+  number {{params.n_tetrahedral}}
+  radius {{params.tetrahedral_radius}}
+end structure
+{% endif %}
+
 {% if params.n_free_cations > 0 %}
 structure {{input.cation_file}}
   {% if params.resnumbers > 0 %}

@@ -24,7 +24,6 @@ class PackmolInput(BaseModel):
 
 
 class PackmolParams(BaseModel):
-
     packmol_input: PackmolInput
     system_file: Path  # output path to which PACKMOL will create the file if you actually run it with the created input file
     x_box_length: float = Field(gt=0)  # Box length in the x-dimension
@@ -49,11 +48,27 @@ class PackmolParams(BaseModel):
         None  # if n_monomer is greater than 0 you must input this or PACKMOL will fail
     )
     monomer_radius: float = Field(gt=0, default=1.5)  # overrides the tolerance
+    # Dimers
     n_dimer: int = Field(ge=0, default=0)  # Number of anion-cation-anion units
     dimer_file: Optional[Path] = (
         None  # if n_dimer is greater than 0 you must input this or PACKMOL will fail
     )
     dimer_radius: float = Field(gt=0, default=1.5)  # overrides the tolerance
+    # Trimer support
+    n_trimer: int = Field(ge=0, default=0)  # Number of trimer units
+    trimer_file: Optional[Path] = (
+        None  # if n_dimer is greater than 0 you must input this or PACKMOL will fail
+    )
+    trimer_radius: float = Field(gt=0, default=1.5)  # overrides the tolerance
+    # Tetrahedral shell support
+    n_tetrahedral: int = Field(
+        ge=0, default=0
+    )  # Number of tetrahedral solvation shells
+    tetrahedral_file: Optional[Path] = (
+        None  # if n_dimer is greater than 0 you must input this or PACKMOL will fail
+    )
+    tetrahedral_radius: float = Field(gt=0, default=1.5)  # overrides the tolerance
+    # Packmol options
     tolerance: float = Field(
         gt=0, default=2.0
     )  # minimum distance between subunits in PACKMOL. can be overriden by radius
@@ -86,6 +101,20 @@ class PackmolParams(BaseModel):
         if self.n_dimer is not None and self.n_dimer > 0 and self.dimer_file is None:
             errors.append("n_dimer > 0 but dimer_file has not been provided.")
 
+        # Check trimer_file if n_trimer > 0
+        if self.n_trimer is not None and self.n_trimer > 0 and self.trimer_file is None:
+            errors.append("n_trimer > 0 but trimer_file has not been provided.")
+
+        # Check tetrahedral_file if n_tetrahedral > 0
+        if (
+            self.n_tetrahedral is not None
+            and self.n_tetrahedral > 0
+            and self.tetrahedral_file is None
+        ):
+            errors.append(
+                "n_tetrahedral > 0 but tetrahedral_file has not been provided."
+            )
+
         # Check water_file if n_wat>0
         if (
             self.n_wat is not None
@@ -106,7 +135,6 @@ class MoltemplateInput(BaseModel):
 
 
 class MoltemplateParams(BaseModel):
-
     moltemplate_input: MoltemplateInput
     n_free_cations: Optional[int] = Field(ge=0, default=0)
     n_free_anions: Optional[int] = Field(ge=0, default=0)  # free anions
@@ -117,6 +145,8 @@ class MoltemplateParams(BaseModel):
     n_dimer: Optional[int] = Field(
         ge=0, default=0
     )  # Number of anion-cation-anion units (definition should be inside cation file)
+    n_trimer: Optional[int] = Field(ge=0, default=0)
+    n_tetrahedral: Optional[int] = Field(ge=0, default=0)
     x_box_length: float = Field(gt=0)  # Box length in the x-dimension
     y_box_length: float = Field(gt=0)  # Box length in the y-dimension
     z_box_length: float = Field(gt=0)  # Box length in the z-dimension

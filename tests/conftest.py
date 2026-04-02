@@ -278,7 +278,7 @@ def test_packmol_input_gromacs_pdb():
         system_file=package_root
         / Path(
             "tests/output/system_gromacs.pdb"
-        ),  # the actual XYZ that will be created by PACKMOL if you run it with the input file you will create
+        ),  # the actual PDB that will be created by PACKMOL if you run it with the input file you will create
         n_wat=n_wat,
         n_monomer=n_monomers,
         n_dimer=n_dimers,

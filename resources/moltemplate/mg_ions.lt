@@ -118,3 +118,91 @@ Dimer {
 } # end of Mg-Cl2 dimer
 
 # -------------------------------------------------------------------------------------------
+
+Trimer {
+
+  # AtomID MoleculeID AtomType charge    X       Y       Z
+
+  write("Data Atoms") {
+    $atom:mg   $mol:m  @atom:Cation/Mg  2.0  0.0000000 0.00000 0.000000
+    $atom:cl1  $mol:m  @atom:ClIon/Cl   -1.0  2.33       0.00      0.00
+    $atom:cl2  $mol:m  @atom:ClIon/Cl   -1.0  -2.33       0.00      0.00
+    $atom:cl3  $mol:m  @atom:ClIon/Cl   -1.0  0.00       0.00      2.33
+  }
+
+  write_once("Data Masses") {
+    @atom:Cation/Mg 24.305
+    @atom:ClIon/Cl 35.453
+  }
+
+  write("Data Bonds") {
+    $bond:mgcl1 @bond:Monomer/MgCl $atom:mg $atom:cl1
+    $bond:mgcl2 @bond:Monomer/MgCl $atom:mg $atom:cl2
+    $bond:mgcl3 @bond:Monomer/MgCl $atom:mg $atom:cl3
+  }
+
+  write_once("In Settings") {
+    bond_coeff   @bond:Monomer/MgCl 10000 2.33
+    pair_coeff   @atom:Cation/Mg @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    
+    # fix shake cannot be used for linear rigid molecules. Use fix/rigid instead
+  }
+
+  write_once("In Init") {
+    # -- Default styles (for solo "TIP4P_2005" water) --
+    units        real
+    atom_style   full
+    pair_style   lj/cut/coul/long 12 8.5
+    bond_style   harmonic # this was previously harmonic harmonic
+    angle_style  harmonic # this was previously hybrid harmonic
+    kspace_style pppm/tip4p 1e-6 
+  }
+
+} # end of Mg-Cl3 trimer
+
+# -------------------------------------------------------------------------------------------
+
+Tetrahedral {
+
+  # AtomID MoleculeID AtomType charge    X       Y       Z
+
+  write("Data Atoms") {
+    $atom:mg   $mol:m  @atom:Cation/Mg  2.0  0.0000000 0.00000 0.000000
+    $atom:cl1  $mol:m  @atom:ClIon/Cl   -1.0  2.33       0.00      0.00
+    $atom:cl2  $mol:m  @atom:ClIon/Cl   -1.0  -2.33       0.00      0.00
+    $atom:cl3  $mol:m  @atom:ClIon/Cl   -1.0  0.00       0.00      2.33
+    $atom:cl4  $mol:m  @atom:ClIon/Cl   -1.0  0.00       0.00      -2.33
+  }
+
+  write_once("Data Masses") {
+    @atom:Cation/Mg 24.305
+    @atom:ClIon/Cl 35.453
+  }
+
+  write("Data Bonds") {
+    $bond:mgcl1 @bond:Monomer/MgCl $atom:mg $atom:cl1
+    $bond:mgcl2 @bond:Monomer/MgCl $atom:mg $atom:cl2
+    $bond:mgcl3 @bond:Monomer/MgCl $atom:mg $atom:cl3
+    $bond:mgcl4 @bond:Monomer/MgCl $atom:mg $atom:cl4
+  }
+
+  write_once("In Settings") {
+    bond_coeff   @bond:Monomer/MgCl 10000 2.33
+    pair_coeff   @atom:Cation/Mg @atom:ClIon/Cl 0.00000 0.00000 # wrong, just a placeholder 
+    
+    # fix shake cannot be used for linear rigid molecules. Use fix/rigid instead
+  }
+
+  write_once("In Init") {
+    # -- Default styles (for solo "TIP4P_2005" water) --
+    units        real
+    atom_style   full
+    pair_style   lj/cut/coul/long 12 8.5
+    bond_style   harmonic # this was previously harmonic harmonic
+    angle_style  harmonic # this was previously hybrid harmonic
+    kspace_style pppm/tip4p 1e-6 
+  }
+
+} # end of Mg-Cl4 tetrahedral shell 
+
+# -------------------------------------------------------------------------------------------

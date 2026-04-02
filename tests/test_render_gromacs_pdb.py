@@ -33,7 +33,7 @@ def renumber_residuenumbers(atoms: Atoms):
 
 
 def test_gromacs_input(test_packmol_input_gromacs_pdb):
-    """Using the PACKMOL generated XYZ file as input, create a LAMMPS data file"""
+    """Using the PACKMOL generated PDB file as input, create a LAMMPS data file"""
     package_root = Path(__file__).parent.parent.resolve()  # top-level directory
     output_g96 = package_root / Path(
         "tests/output/gromacs/system_from_pdb.g96"
