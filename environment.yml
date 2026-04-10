@@ -12,6 +12,7 @@ dependencies:
   - snakemake
   - moltemplate
   - packmol
-pip: 
-  - snakemake-executor-plugin-cluster-generic
-  - Jinja2
+  - pip
+  - pip: 
+    - snakemake-executor-plugin-cluster-generic
+    - Jinja2
