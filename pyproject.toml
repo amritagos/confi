@@ -2,19 +2,16 @@
 name = "confi"
 version = "0.0.1"
 description = "Creates configuration files for LAMMPS and GROMACS"
-authors = [
-    {name = "Amrita Goswami", email = "amrita16thaug646@gmail.com"},
-]
+authors = [{ name = "Amrita Goswami", email = "amrita16thaug646@gmail.com" }]
 
-dependencies = [
-    "numpy>=1.26.4",
-    "ase>=3.22.1",
-    "scipy>=1.7.3",
-    "pytest",
-]
+dependencies = ["numpy>=1.26.4", "ase>=3.22.1", "scipy>=1.7.3", "Jinja2"]
 requires-python = ">=3.9"
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
+
+[project.optional-dependencies]
+tests = ["pytest"]
+examples = ["snakemake", "snakemake-executor-plugin-cluster-generic"]
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]

@@ -24,3 +24,12 @@ cd snmk_workflow
 snakemake --cores 1 -n # dry run 
 snakemake --cores 1 # actual run 
 ```
+
+### External Dependencies
+
+The following are external dependencies that need to be in your path: 
+
+- moltemplate
+- packmol
+
+I recommend installing them via `micromamba` or `conda`.
