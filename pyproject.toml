@@ -4,10 +4,20 @@ version = "0.0.1"
 description = "Creates configuration files for LAMMPS and GROMACS"
 authors = [{ name = "Amrita Goswami", email = "amrita16thaug646@gmail.com" }]
 
-dependencies = ["numpy>=1.26.4", "ase>=3.22.1", "scipy>=1.7.3", "Jinja2"]
+dependencies = [
+    "numpy>=1.26.4",
+    "ase>=3.22.1",
+    "scipy>=1.7.3",
+    "Jinja2",
+    "pydantic>=2",
+    "typer>=0.12",
+]
 requires-python = ">=3.9"
 readme = "README.md"
 license = { text = "MIT" }
+
+[project.scripts]
+confi = "confi.cli:app"
 
 [project.optional-dependencies]
 tests = ["pytest"]
