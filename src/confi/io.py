@@ -259,8 +259,8 @@ def write_lammps_data(
             vel = prismobj.vector_to_lammps(atoms.get_velocities())
             # Convert velocity from ASE units to LAMMPS units
             vel = convert(vel, "velocity", "ASE", units)
-        for i, v in enumerate(vel):
-            fileobj.write(f"{i + 1:>6} {v[0]:23.17g} {v[1]:23.17g} {v[2]:23.17g}\n")
+            for i, v in enumerate(vel):
+                fileobj.write(f"{i + 1:>6} {v[0]:23.17g} {v[1]:23.17g} {v[2]:23.17g}\n")
         if bonds and (atoms.arrays.get("bonds") is not None):
             fileobj.write("\nBonds\n\n")
             for i in range(n_bonds):
@@ -473,7 +473,8 @@ def read_gromos(fileobj, dummy_site_symbols: list = ["MW4"]):
             read_vel = True
 
     gmx_system = Atoms(symbols=symbols, positions=tmp_pos, cell=mycell)
-    gmx_system.set_velocities(tmp_vel)
+    if tmp_vel:
+        gmx_system.set_velocities(tmp_vel)
     # Set the residuenumbers and residuenames
     gmx_system.arrays["residuenumbers"] = np.array(residuenumbers, dtype=int)
     gmx_system.arrays["residuenames"] = np.array(residuenames, dtype=object)
